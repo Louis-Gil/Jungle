@@ -14,7 +14,7 @@ for i in person_lst:
         i = sorted(i)
         roads.append(i)
 roads.sort(key = lambda x:x[1])
-print(num, person_lst, korail, roads)
+print(num, korail, roads)
 
 answer = 0
 heap = []
