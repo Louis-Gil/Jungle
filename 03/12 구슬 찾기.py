@@ -11,7 +11,7 @@ for i in range(line):
     A, B = map(int, input().split())
     bigger_lst[B].append(A)
     smaller_lst[A].append(B)
-# print(bigger_lst, smaller_lst)
+print(bigger_lst, smaller_lst)
 
 def dfs(arr, n):
     global cnt
