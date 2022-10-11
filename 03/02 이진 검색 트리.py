@@ -3,6 +3,7 @@ sys.stdin = open('03\input.txt', 'r')
 input = sys.stdin.readlines()
 sys.setrecursionlimit(10**6)
 tree = []
+# l = list(map(int, sys.stdin.read().strip().split('\n')))
 
 def postorder(start, end):
     if start > end:
