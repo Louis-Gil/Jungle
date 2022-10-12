@@ -1,18 +1,14 @@
-import sys
-sys.stdin = open('test\\02\input.txt', 'r')
+N = int(input())
 
-num = int(sys.stdin.readline())
+def moo(acc, cur, N):
+    prev = (acc-cur)//2
+    if N <= prev: return moo(prev, cur-1, N)
+    elif N > prev+cur: return moo(prev, cur-1, N-prev-cur)
+    else: return "o" if N-prev-1 else "m"
 
+acc, n = 3, 0
+while N > acc:
+    n += 1
+    acc = acc*2+n+3
 
-S = "moomooomoo"
-temp = "moo"
-count = 1
-len1 = 10
-while len1 < num:
-    count += 1
-    len1 = len1*2 + len(temp)
-    temp, S = S, (S+temp+"o"*count+S)
-print(S[num-1])
-
-# 아마 temp 설정이 잘못 되어서 시간초과 또는 틀린 것 같습니다.
-# temp가 기존 s가 아니라 'm'+'o'*(k+2) 가 되어야 맞을 것 같습니다
+print(moo(acc, n+3, N))
