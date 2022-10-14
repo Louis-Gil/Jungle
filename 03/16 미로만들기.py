@@ -32,8 +32,4 @@ def BFS():
                 if graph[ty][tx] == '0':
                     heapq.heappush(heap, [count+1, ty, tx])
                 else: heapq.heappush(heap, [count, ty, tx])
-
-
-
-
 BFS()
