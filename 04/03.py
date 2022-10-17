@@ -18,7 +18,6 @@
 #             if i-coins[j] >= 0:
 #                 dp[j][i] += dp[j][i-coins[j]]
 #     print(dp[N][M])
-# 출처: https://d-cron.tistory.com/23 [D cron:티스토리]
 
 import sys
 Times = int(input())
