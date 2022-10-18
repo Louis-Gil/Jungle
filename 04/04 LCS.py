@@ -13,8 +13,6 @@ for i in range(1, height1+1):
             cache[i][j] = max(cache[i][j-1], cache[i-1][j])
 print(cache[-1][-1])
 
-
-
 # import sys
 # input = sys.stdin.readline
 
