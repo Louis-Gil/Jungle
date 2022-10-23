@@ -1,6 +1,7 @@
 .PHONY: test
 
-CFLAGS=-I ../src -Wall -g #-DSENTINEL
+# // DSENTINEL 제거
+# CFLAGS=-I ../src -Wall -g #-DSENTINEL
 
 test: test-rbtree
 	./test-rbtree
