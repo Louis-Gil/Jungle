@@ -14,5 +14,5 @@ void HanoiTower(int n, char from, char mid, char to)
 
 void main()
 {
-    HanoiTower(3, 'A', 'B', 'C');
+    HanoiTower(5, 'A', 'B', 'C');
 }

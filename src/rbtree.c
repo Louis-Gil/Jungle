@@ -1,10 +1,13 @@
 #include "rbtree.h"
-
 #include <stdlib.h>
 
 rbtree *new_rbtree(void) {
-  rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
   // TODO: initialize struct if needed
+  rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
+  node_t *NIL = (node_t *)calloc(1, sizeof(node_t));
+  NIL ->color = RBTREE_BLACK
+  p -> root = NIL;
+  p -> nil = NIL;
   return p;
 }
 
@@ -13,8 +16,14 @@ void delete_rbtree(rbtree *t) {
   free(t);
 }
 
+// node_t *rbtree_insert(rbtree *t, const key_t key) {
+//   // TODO: implement insert
+//   return t->root;
+// }
+
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // TODO: implement insert
+  
   return t->root;
 }
 

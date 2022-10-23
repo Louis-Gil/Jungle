@@ -1,5 +1,5 @@
 #include "binary_tree.h"
-
+//배열의 크기에 대한 예외가 생략되어있음
 //트리
 #define NODE_MAXCOUNT 100
 DATA tree[NODE_MAXCOUNT] = {0}; //0값을 empty표시

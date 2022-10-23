@@ -1,5 +1,12 @@
 #include "binary_tree.h"
+
+// void printer(Node root){
+//     printf("%c", getCurData(root));
+// }
+
 // void main(){
+//     //트리를 선언한다
+//     DATA tree;
 //     Node n1 = makeRoot('-');
 //     Node n2 = makeLeftChild(n1, '*');
 //     Node n3 = makeRightChild(n1, '/');
@@ -7,8 +14,14 @@
 //     Node n5 = makeRightChild(n2, 'B');
 //     Node n6 = makeLeftChild(n3, 'C');
 //     Node n7 = makeRightChild(n3, 'D');
+//     printf("%c", getCurData(n1));
+//     printf("\n");
+//     printer(n4);
+//     printf("\n");
 //     return;
 // }
+
+
 void preorder(Node root){
     if (isTreeEmpty(root))
         return;

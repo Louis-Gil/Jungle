@@ -6,7 +6,7 @@
 typedef enum { RBTREE_RED, RBTREE_BLACK } color_t;
 
 typedef int key_t;
-
+//color_t 구조체 color 변수 red,black 속성?
 typedef struct node_t {
   color_t color;
   key_t key;

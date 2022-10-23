@@ -1,5 +1,6 @@
-#include "binary_tree.h"
-
+#include "binary_tree2.h"
+// malloc 반환값 체크 - 8, 14, 21line tree가 null이라면 처리, 반환
+// 포인터 역참조 전에 NULL체크 - 28, 31등 cur이 null일수있음
 //트리
 Node tree = NULL;
 
