@@ -8,6 +8,9 @@ void insert_case1(rbtree *t, node_t *p);
 void insert_case2(rbtree *t, node_t *p);
 void insert_case3(rbtree *t, node_t *p);
 void insert_case4(rbtree *t, node_t *p);
+void insert_case5(rbtree *t, node_t *p);
+static void rotate_left(rbtree *t, node_t *x);
+static void rotate_right(rbtree *t, node_t *x);
 
 node_t *make_granpa(node_t* p, rbtree *t){
   if((p!=t->nil)&&(p->parent != t->nil))
@@ -17,7 +20,7 @@ node_t *make_granpa(node_t* p, rbtree *t){
 };
 node_t *make_uncle(node_t* p, rbtree *t){
   node_t *granpa = make_granpa(p, t);
-  if (g == t->nil)
+  if (granpa == t->nil)
     return t->nil; //할아버지가 없으면 삼촌도 없다
   if (p->parent == granpa->left)
     return granpa->right;
@@ -29,23 +32,21 @@ rbtree *new_rbtree(void) {
   // TODO: initialize struct if needed
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
   node_t *NIL = (node_t *)calloc(1, sizeof(node_t));
-  NIL -> color = RBTREE_BLACK;
-  NIL -> parent = NIL;
-  p -> root = p -> nil = NIL;
+  NIL->color = RBTREE_BLACK;
+  p->nil = p->root = NIL;
   return p;
 }
 
 void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
-  node_t *NIL = t->nil;
-  delete_rbtree_rep(NIL, t->root);
+  delete_rbtree_rep(t->nil, t->root);
   free(t->nil);
   free(t);
 }
 void delete_rbtree_rep(node_t *NIL, node_t *p){
-  while(p != NIL){
-    // delete_rbtree_rep(p->left);
-    // delete_rbtree_rep(p->right);
+  if (p != NIL){
+    delete_rbtree_rep(NIL, p->left);
+    delete_rbtree_rep(NIL, p->right);
     free(p);
   }
 }
@@ -120,17 +121,48 @@ void insert_case4(rbtree *t, node_t *p){
   }
   insert_case5(t, p);
 }
-void insert_case5(){
-
+void insert_case5(rbtree *t, node_t *p){
+  node_t *granpa = make_granpa(p, t);
+  p->parent->color = RBTREE_BLACK;
+  granpa->color = RBTREE_RED;
+  if(p==p->parent->left)
+    rotate_right(t, granpa);
+  else
+    rotate_left(t, granpa);
 }
+
 static void rotate_left(rbtree *t, node_t *x){ //g->x->y에서 g->y->x왼쪽
-  // node_t *y = x->right;
-  // node_t *granpa = x->parent;
-  // if(y->left != t->nil)
-  //   y->left->parent = x;
-  
-}
+  node_t *y = x->right;
+  x->right = y->left;
+  if(y->left != t->nil)
+    y->left->parent = x;
+  y->parent = x->parent;
 
+  if (x->parent == t->nil)
+    t->root = y;
+  else if (x == x->parent->left)
+    x->parent->left = y;
+  else
+    x->parent->right = y;
+  y->left = x;
+  x->parent = y;
+}
+static void rotate_right(rbtree *t, node_t *x){ //g->x->y에서 g->y->x오른쪽
+  node_t *y = x->left;
+  x->left = y->right;
+  if(y->right != t->nil)
+    y->right->parent = x;
+  y->parent = x->parent;
+
+  if (x->parent == t->nil)
+    t->root = y;
+  else if (x == x->parent->right)
+    x->parent->right = y;
+  else
+    x->parent->left = y;
+  y->right = x;
+  x->parent = y;
+}
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
