@@ -10,7 +10,9 @@ int main(int argc, char *argv[]) {
     // rbtree_insert(T, 500);
     printf("%d %d\n", T->root->key, T->root->color);
     printf("%d %d\n", T->root->left->key, T->root->left->color);
+    
     printf("%d %d\n", T->root->right->key, T->root->right->color);
+    printf("%d %d\n", T->root->right->left->key, T->root->right->left->color);
     // printf("%d\n", T->root->left->left->key);
     // printf("%d\n", T->root->right->right->key);
 }

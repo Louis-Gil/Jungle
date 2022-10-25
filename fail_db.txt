@@ -1,0 +1,89 @@
+void struct_fix(rbtree *t, node_t *new_Node);
+void rbtree_condition_case1(rbtree *t);
+int rbtree_condition_case2(node_t* new_Node, node_t* parent, node_t *granpa, node_t * uncle);
+void rbtree_condition_case3(node_t* new_Node, rbtree *t);
+
+// void struct_fix(rbtree *t, node_t *new_Node){
+//   node_t *parent = new_Node->parent;
+//   while(1){
+//     rbtree_condition_case1(t); //헤드노드 검은색
+//     if (parent->color == RBTREE_BLACK)
+//       break;
+
+//     node_t *granpa = parent->parent;
+//     node_t *uncle;
+//     if (granpa->left == parent)
+//       uncle = granpa->right;
+//     else
+//       uncle = granpa->left;
+
+//     if (rbtree_condition_case2(new_Node, parent, granpa, uncle) == 1)
+//       continue;//삼촌이 빨간색일 경우 색 변경
+
+//     rbtree_condition_case3(new_Node, t);
+    
+//   }
+// }
+void rbtree_condition_case1(rbtree *t){
+  if (t->root->color == RBTREE_RED)
+    t->root->color = RBTREE_BLACK;
+}
+int rbtree_condition_case2(node_t* new_Node, node_t *parent, node_t *granpa, node_t * uncle){
+  if (uncle->color == RBTREE_RED){
+    parent->color = RBTREE_BLACK;
+    uncle->color = RBTREE_BLACK;
+    granpa->color = RBTREE_RED;
+
+    new_Node->parent = granpa;
+    new_Node = parent;
+    return 1;
+  }
+  return 0;
+}
+void rbtree_condition_case3(node_t* new_Node, rbtree *t){
+  node_t *parent = new_Node->parent;
+  node_t *granpa = parent->parent;
+  node_t *NIL = t->nil;
+  if (granpa->right==parent && parent->left == new_Node){
+    granpa->right = new_Node;
+    new_Node->right = parent;
+    new_Node->parent = granpa;
+    parent->parent = new_Node;
+    parent->left = NIL;
+  } //오른쪽으로 꺽은선 펴주기
+  if (granpa->left==parent && parent->right == new_Node){
+    granpa->left = new_Node;
+    new_Node->left = parent;
+    new_Node->parent = granpa;
+    parent->parent = new_Node;
+    parent->left = NIL;
+  } //왼쪽으로 꺽은선 펴주기
+
+  if (granpa->right == parent && parent->right == new_Node){
+    granpa->right = parent->left;
+    parent->left = granpa;     
+  } //오른쪽으로 펴진선 정렬
+  if (granpa->left == parent && parent->left == new_Node){
+    granpa->left = parent->right;
+    parent->right = granpa;
+  } //왼쪽으로 펴진선 정렬
+
+  if(granpa->parent == NIL){
+    t->root = parent;
+    parent->parent = t->root;
+    granpa->parent = parent;
+  }
+  else{
+    node_t* biggranpa = granpa->parent;
+    if (biggranpa->left == granpa){
+      biggranpa->left = parent;
+      parent->parent = biggranpa;
+    }
+    else{
+      biggranpa->right = parent;
+      parent->parent = biggranpa;
+    }
+  }
+  granpa->color = RBTREE_RED;
+  parent->color = RBTREE_BLACK;   
+}

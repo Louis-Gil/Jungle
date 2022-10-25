@@ -4,14 +4,26 @@
 void delete_rbtree(rbtree *t);
 void delete_rbtree_rep(node_t *NIL, node_t *p);
 node_t *rbtree_insert(rbtree *t, const key_t key);
-void struct_fix(rbtree *t, node_t *new_Node);
-void rbtree_condition_case1(rbtree *t);
-int rbtree_condition_case2(node_t* new_Node, node_t* parent, node_t *granpa, node_t * uncle);
-void rbtree_condition_case3(node_t* new_Node, rbtree *t);
-/*
+void insert_case1(rbtree *t, node_t *p);
+void insert_case2(rbtree *t, node_t *p);
+void insert_case3(rbtree *t, node_t *p);
+void insert_case4(rbtree *t, node_t *p);
 
-
-*/
+node_t *make_granpa(node_t* p, rbtree *t){
+  if((p!=t->nil)&&(p->parent != t->nil))
+    return p->parent->parent;
+  else
+    return t->nil;
+};
+node_t *make_uncle(node_t* p, rbtree *t){
+  node_t *granpa = make_granpa(p, t);
+  if (g == t->nil)
+    return t->nil; //할아버지가 없으면 삼촌도 없다
+  if (p->parent == granpa->left)
+    return granpa->right;
+  else
+    return granpa->left;
+};
 
 rbtree *new_rbtree(void) {
   // TODO: initialize struct if needed
@@ -19,8 +31,7 @@ rbtree *new_rbtree(void) {
   node_t *NIL = (node_t *)calloc(1, sizeof(node_t));
   NIL -> color = RBTREE_BLACK;
   NIL -> parent = NIL;
-  p -> root = NIL;
-  p -> nil = NIL;
+  p -> root = p -> nil = NIL;
   return p;
 }
 
@@ -31,7 +42,6 @@ void delete_rbtree(rbtree *t) {
   free(t->nil);
   free(t);
 }
-
 void delete_rbtree_rep(node_t *NIL, node_t *p){
   while(p != NIL){
     // delete_rbtree_rep(p->left);
@@ -46,7 +56,7 @@ node_t* rbtree_insert(rbtree *t, const key_t key) {
   node_t * p = t->root;
   node_t * parent = Nil;
   
-  while(p != Nil)
+  while(p != Nil) //트리 위에서 값에따라 아래까지 내려감
   {
     parent = p;
     if(p->key > key) 
@@ -59,8 +69,7 @@ node_t* rbtree_insert(rbtree *t, const key_t key) {
   new_Node->color = RBTREE_RED;
   new_Node->key = key;
   new_Node->parent = parent;
-  new_Node->left = Nil;
-  new_Node->right = Nil;
+  new_Node->left = new_Node->right = Nil;
 
   if(parent != Nil){
     if (parent->key > key) 
@@ -72,94 +81,54 @@ node_t* rbtree_insert(rbtree *t, const key_t key) {
     t->root = new_Node;
   }
 
-  struct_fix(t, new_Node);
-  return t->root;
-  // return new_Node;
+  insert_case1(t, new_Node);
+  return t->root;   // return new_Node;
 }
 
-void struct_fix(rbtree *t, node_t *new_Node){
-  node_t *parent = new_Node->parent;
-  while(1){
-    rbtree_condition_case1(t); //헤드노드 검은색
-    if (parent->color == RBTREE_BLACK)
-      break;
-
-    node_t *granpa = parent->parent;
-    node_t *uncle;
-    if (granpa->left == parent)
-      uncle = granpa->right;
-    else
-      uncle = granpa->left;
-
-    if (rbtree_condition_case2(new_Node, parent, granpa, uncle) == 1)
-      continue;//삼촌이 빨간색일 경우 색 변경
-
-    rbtree_condition_case3(new_Node, t);
-    
-  }
+void insert_case1(rbtree *t, node_t *p){
+  if (p->parent == t->nil)
+    p->color = RBTREE_BLACK;
+  else
+    insert_case2(t, p);
 }
-void rbtree_condition_case1(rbtree *t){
-  if (t->root->color == RBTREE_RED)
-    t->root->color = RBTREE_BLACK;
+void insert_case2(rbtree *t, node_t *p){
+  if (p->parent->color == RBTREE_BLACK)
+    return;
+  else
+    insert_case3(t, p);
 }
-int rbtree_condition_case2(node_t* new_Node, node_t *parent, node_t *granpa, node_t * uncle){
-  if (uncle->color == RBTREE_RED){
-    parent->color = RBTREE_BLACK;
-    uncle->color = RBTREE_BLACK;
+void insert_case3(rbtree *t, node_t *p){
+  node_t *uncle = make_uncle(p, t), *granpa;
+  if ((uncle != t->nil)&&(uncle->color==RBTREE_RED)){
+    p->parent->color = uncle->color = RBTREE_BLACK;
+    granpa = make_granpa(p, t);
     granpa->color = RBTREE_RED;
-
-    new_Node->parent = granpa;
-    new_Node = parent;
-    return 1;
+    insert_case1(t, granpa);
   }
-  return 0;
+  else
+    insert_case4(t, p);
 }
-void rbtree_condition_case3(node_t* new_Node, rbtree *t){
-  node_t *parent = new_Node->parent;
-  node_t *granpa = parent->parent;
-  node_t *NIL = t->nil;
-  if (granpa->right==parent && parent->left == new_Node){
-    granpa->right = new_Node;
-    new_Node->right = parent;
-    new_Node->parent = granpa;
-    parent->parent = new_Node;
-    parent->left = NIL;
-  } //오른쪽으로 꺽은선 펴주기
-  if (granpa->left==parent && parent->right == new_Node){
-    granpa->left = new_Node;
-    new_Node->left = parent;
-    new_Node->parent = granpa;
-    parent->parent = new_Node;
-    parent->left = NIL;
-  } //왼쪽으로 꺽은선 펴주기
-
-  if (granpa->right == parent && parent->right == new_Node){
-    granpa->right = parent->left;
-    parent->left = granpa;     
-  } //오른쪽으로 펴진선 정렬
-  if (granpa->left == parent && parent->left == new_Node){
-    granpa->left = parent->right;
-    parent->right = granpa;
-  } //왼쪽으로 펴진선 정렬
-
-  if(granpa->parent == NIL){
-    t->root = parent;
-    parent->parent = t->root;
-    granpa->parent = parent;
+void insert_case4(rbtree *t, node_t *p){
+  node_t *granpa = make_granpa(p, t);
+  if((p==p->parent->right)&&(p->parent==granpa->left)){
+    rotate_left(t, p->parent);
+    p=p->left;
   }
-  else{
-    node_t* biggranpa = granpa->parent;
-    if (biggranpa->left == granpa){
-      biggranpa->left = parent;
-      parent->parent = biggranpa;
-    }
-    else{
-      biggranpa->right = parent;
-      parent->parent = biggranpa;
-    }
+  else if((p==p->parent->left)&&(p->parent==granpa->right)){
+    rotate_right(t, p->parent);
+    p=p->right;
   }
-  granpa->color = RBTREE_RED;
-  parent->color = RBTREE_BLACK;   
+  insert_case5(t, p);
+}
+void insert_case5(){
+
+}
+static void rotate_left(rbtree *t, node_t *x){ //g->x->y에서 g->y->x왼쪽
+  // node_t *y = x->right;
+  // node_t *granpa = x->parent;
+  // if(y->left != t->nil)
+  //   y->left->parent = x;
+  
 }
 
 
