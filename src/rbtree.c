@@ -83,7 +83,7 @@ node_t* rbtree_insert(rbtree *t, const key_t key) {
   }
 
   insert_case1(t, new_Node);
-  return t->root;   // return new_Node;
+  return new_Node;
 }
 
 void insert_case1(rbtree *t, node_t *p){
@@ -166,21 +166,57 @@ static void rotate_right(rbtree *t, node_t *x){ //g->x->y에서 g->y->x오른쪽
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
-  return t->root;
+  node_t * finder = t->root;
+  while(finder != t->nil){
+    if(finder->key == key)
+      return finder;
+    if(finder->key > key)
+      finder = finder->left;
+    else
+      finder = finder->right;
+  }
+  return 0;
 }
 
 node_t *rbtree_min(const rbtree *t) {
   // TODO: implement find
-  return t->root;
+  node_t * finder = t->root;
+  node_t * previous;
+  while(finder != t->nil){
+    previous = finder;
+    finder = finder->left;
+  }
+  return previous;
 }
 
 node_t *rbtree_max(const rbtree *t) {
   // TODO: implement find
-  return t->root;
+  node_t * finder = t->root;
+  node_t * previous;
+  while(finder != t->nil){
+    previous = finder;
+    finder = finder->right;
+  }
+  return previous;
 }
 
 int rbtree_erase(rbtree *t, node_t *p) {
   // TODO: implement erase
+  node_t *finder = t->root;
+  node_t *previous;
+  if (t->root == t->nil);
+    return 1;
+  while(finder->key != t->nil){
+    previous = finder;
+    if(finder->key > p->key){
+      finder = finder->left;
+    }
+    else if(finder->key < p->key){
+      finder = fidner->right;
+    }
+    else
+      finder = fi
+  }
   return 0;
 }
 
