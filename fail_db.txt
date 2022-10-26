@@ -87,3 +87,97 @@ void rbtree_condition_case3(node_t* new_Node, rbtree *t){
   granpa->color = RBTREE_RED;
   parent->color = RBTREE_BLACK;   
 }
+
+
+
+
+
+// int rbtree_erase(rbtree *t, node_t *p)
+// {
+//   // TODO: implement erase
+//   // 화이팅!
+//   // 트리에 노드가 오면 노드를 찾는다
+//   // 자녀가 없다 -> 그냥 삭제 // 자녀가 하나 -> 아래 노드와 부모 이어주기  // 자녀가 둘 -> 오른쪽에서 가장 작은 값 교체
+//   // 색 변수 만들어서 p의 색이 삭제되는색 나중 조건
+
+//   node_t *right_min;
+
+//   //색 받아오기
+//   color_t del_color = p->color;
+
+//   // p의 right가 없다
+//   if (p->right == t->nil)
+//     if (p->left == t->nil) // p의 rightX leftX 자녀가 없는 경우!!
+//       rbtree_erase_successor(t, p, t->nil);
+//     else // p의 rightX leftO 자녀가 left만 있는 경우 !!
+//       rbtree_erase_successor(t, p, p->left);
+//   else
+//   { // p의 rightO leftXO 자녀 중 right가 있는경우(left있든지 없든지 상관없이)
+//     // right의 min노드를 찾아주어야함
+//     right_min = rbtree_erase_find_node_max(t, p);
+//     rbtree_erase_successor(t, p, right_min);
+//   }
+
+//   return 0;
+// }
+
+
+
+
+
+
+
+
+void insert_case1(rbtree *t, node_t *p)
+{
+  if (p->parent == t->nil)
+    p->color = RBTREE_BLACK;
+  else
+    insert_case2(t, p);
+}
+void insert_case2(rbtree *t, node_t *p)
+{
+  if (p->parent->color == RBTREE_BLACK)
+    return;
+  else
+    insert_case3(t, p);
+}
+void insert_case3(rbtree *t, node_t *p)
+{
+  node_t *uncle = make_uncle(p, t), *granpa;
+  if ((uncle != t->nil) && (uncle->color == RBTREE_RED))
+  {
+    p->parent->color = uncle->color = RBTREE_BLACK;
+    granpa = make_granpa(p, t);
+    granpa->color = RBTREE_RED;
+    insert_case1(t, granpa);
+  }
+  else
+    insert_case4(t, p);
+}
+void insert_case4(rbtree *t, node_t *p)
+{
+  node_t *granpa = make_granpa(p, t);
+  if ((p == p->parent->right) && (p->parent == granpa->left))
+  {
+    rotate_left(t, p->parent);
+    p = p->left;
+  }
+  else if ((p == p->parent->left) && (p->parent == granpa->right))
+  {
+    rotate_right(t, p->parent);
+    p = p->right;
+  }
+  insert_case5(t, p);
+}
+void insert_case5(rbtree *t, node_t *p)
+{
+  node_t *granpa = make_granpa(p, t);
+  p->parent->color = RBTREE_BLACK;
+  granpa->color = RBTREE_RED;
+  if (p == p->parent->left)
+    rotate_right(t, granpa);
+  else
+    rotate_left(t, granpa);
+  insert_case1(t, granpa);
+}
