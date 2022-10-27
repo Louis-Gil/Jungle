@@ -22,8 +22,18 @@ for i in range(len(str)-1):
     # print(temp)
     for j in cro2:
         if j == temp:
-            print(j, temp)
+            # print(j, temp)
             result2 += 1
 # print(result2, result3)
 print(len(str)-result2)
 
+
+
+# ------------------------
+# croatia=['c=','c-', 'dz=', 'd-', 'lj', 'nj', 's=','z=']
+# word=input()
+# cnt=0
+
+# for i in croatia:
+#     word=word.replace(i, '*')  
+# print(len(word))
