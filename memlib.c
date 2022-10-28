@@ -14,7 +14,11 @@
 #include "memlib.h"
 #include "config.h"
 
-/* private variables */
+/* private variables
+1. point to first byte of heap
+2. point to last byte of heap plus 1
+3. max legal heap addr plus 1
+ */
 static char *mem_start_brk;  /* points to first byte of heap */
 static char *mem_brk;        /* points to last byte of heap */
 static char *mem_max_addr;   /* largest legal heap address */ 
@@ -45,7 +49,7 @@ void mem_deinit(void)
 /*
  * mem_reset_brk - reset the simulated brk pointer to make an empty heap
  */
-void mem_reset_brk()
+void mem_reset_brk() 
 {
     mem_brk = mem_start_brk;
 }
