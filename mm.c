@@ -46,15 +46,20 @@ team_t team = {
 
 /* 
  * mm_init - initialize the malloc package.
+ 문제가 있으면 -1, 없으면 0
+
  */
 int mm_init(void)
 {
     return 0;
 }
 
+
 /* 
  * mm_malloc - Allocate a block by incrementing the brk pointer.
  *     Always allocate a block whose size is a multiple of the alignment.
+ 항상 8바이트 정렬 포인터를 반환해야 한다?
+ 8바이트로 정렬된 payload pointer 를 반환
  */
 void *mm_malloc(size_t size)
 {
@@ -70,6 +75,8 @@ void *mm_malloc(size_t size)
 
 /*
  * mm_free - Freeing a block does nothing.
+ ptr이 가리키는 블록을 개방
+ malloc 또는 remalloc에 의해 생긴 포인터만 반환하는 것을 보장
  */
 void mm_free(void *ptr)
 {
@@ -77,6 +84,10 @@ void mm_free(void *ptr)
 
 /*
  * mm_realloc - Implemented simply in terms of mm_malloc and mm_free
+ 최소 크기의 할당된 영역으로 포인터 반환
+ ptr이 null이면 호출은 malloc(size)와 같음
+ -크기가 0인 경우 free(ptr)과 같음
+ realloc에 대한 호출은 ptr(이전버전)로 표시된 메모리 블록의 크기를
  */
 void *mm_realloc(void *ptr, size_t size)
 {
