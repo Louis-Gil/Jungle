@@ -38,7 +38,6 @@ team_t team = {
 #define WSIZE 4             /* Word and header/footer size (bytes) */
 #define DSIZE 8             /* Double word size (bytes) */
 #define CHUNKSIZE (1 << 12) /* Extend heap by this amount (bytes) 처음 4kb*/
-#define MINIMUM 24          /* 최소 블록 크기*/
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 /* Pack a size and allocated bit into a word
 사이즈와 할당여부 패킹 -> 헤더 데이터 */
@@ -70,39 +69,34 @@ p가 참조하는 워드 리턴 / p에 워드 저장 */
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
 
-
-//선언 부분
 static void *extend_heap(size_t words);
 static void *coalesce(void *bp);
 static void *find_fit(size_t asize);
 static void place(void *bp, size_t asize);
 
 static char *heap_listp;
-static char *free_listp;
 
 
 /*
  * mm_init - initialize the malloc package.
  최초 힙영역 할당  문제가 있으면 -1, 없으면 0
+ 1. padding w, 2~3. prolog (head, foot), 4. epilogue (head)
  */
 int mm_init(void)
 {
-    if ((heap_listp = mem_sbrk(6 * WSIZE)) == (void *)-1)
+    if ((heap_listp = mem_sbrk(4 * WSIZE)) == (void *)-1)
         return -1;
-    PUT(heap_listp, 0); // padding
-    PUT(heap_listp + (1 * WSIZE), PACK(MINIMUM, 1)); // header
-    PUT(heap_listp + (2 * WSIZE), 0); // prev
-    PUT(heap_listp + (3 * WSIZE), 0); // next
-    PUT(heap_listp + (4 * WSIZE), PACK(MINIMUM, 1)); // footer
-    PUT(heap_listp + (5 * WSIZE), PACK(0, 1));
-    free_listp = heap_listp + (DSIZE); //??? 
+    PUT(heap_listp, 0);
+    PUT(heap_listp + (1 * WSIZE), PACK(DSIZE, 1));
+    PUT(heap_listp + (2 * WSIZE), PACK(DSIZE, 1));
+    PUT(heap_listp + (3 * WSIZE), PACK(0, 1));
+    heap_listp += (2 * WSIZE);
 
     if (extend_heap(CHUNKSIZE / WSIZE) == NULL)
         return -1;
     return 0;
 }
 
-/* 힙 늘리기*/
 static void *extend_heap(size_t words)
 {
     char *bp;
@@ -115,7 +109,6 @@ static void *extend_heap(size_t words)
     PUT(HDRP(bp), PACK(size, 0));
     PUT(FTRP(bp), PACK(size, 0));
     PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1));
-    // 이전 블록이 가용 블록이면 합병하고, 가용리스트에 블록 추가
     return coalesce(bp);
 }
 
@@ -131,10 +124,13 @@ void *mm_malloc(size_t size)
     size_t extendsize; 
     char *bp;
 
-    if (size <= 0)
+    if (size == 0)
         return NULL;
 
-    asize = MAX(ALIGN(size)+DSIZE, MINIMUM);
+    if (size <= DSIZE)
+        asize = 2 * DSIZE;
+    else
+        asize = DSIZE * ((size + (DSIZE) + (DSIZE - 1)) / DSIZE);
 
     if ((bp = find_fit(asize)) != NULL)
     {
@@ -152,11 +148,10 @@ void *mm_malloc(size_t size)
 static void *find_fit(size_t asize)
 {
     void *bp;
-    /* 가용 리스트로부터 다음블록으로 가면서 할당되지 않은 블록이면 if문 실행
-    asize가 블록사이즈 보다 작으면 리턴   */
-    for(bp = free_listp; GET_ALLOC(HDRP(bp)) == 0; bp = NEXT_BLKP(bp))
+
+    for(bp = heap_listp; GET_SIZE(HDRP(bp)) > 0; bp = NEXT_BLKP(bp))
     {
-        if(asize <= GET_SIZE(HDRP(bp))){
+        if(!GET_ALLOC(HDRP(bp)) && (asize <= GET_SIZE(HDRP(bp)))){
             return bp;
         }
     }
@@ -167,28 +162,22 @@ static void place(void *bp, size_t asize)
 {
     size_t csize = GET_SIZE(HDRP(bp));
 
-    if ((csize - asize) >= (MINIMUM)){
-        //블록 할당
+    if ((csize - asize) >= (2*DSIZE)){
         PUT(HDRP(bp), PACK(asize, 1));
         PUT(FTRP(bp), PACK(asize, 1));
-        //가용리스트에서 삭제
-        removeBlock(bp);
         bp = NEXT_BLKP(bp);
-        //남은 공간의 헤더 풋터 계산, 인접 가용블록과 합병???
         PUT(HDRP(bp), PACK(csize-asize, 0));
         PUT(FTRP(bp), PACK(csize-asize, 0));
-        coalesce(bp);
     }
-    else{//최소블록크기 미만일시
+    else{
         PUT(HDRP(bp), PACK(csize, 1));
         PUT(FTRP(bp), PACK(csize, 1));
-        removeBlock(bp);
     }
 }
 
 static void *coalesce(void *bp)
-{ // prev_blkp 생김???
-    size_t prev_alloc = GET_ALLOC(FTRP(PREV_BLKP(bp))) || PREV_BLKP(bp) == bp;
+{
+    size_t prev_alloc = GET_ALLOC(FTRP(PREV_BLKP(bp)));
     size_t next_alloc = GET_ALLOC(HDRP(NEXT_BLKP(bp)));
     size_t size = GET_SIZE(HDRP(bp));
     
