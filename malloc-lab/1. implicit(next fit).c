@@ -107,9 +107,9 @@ static void *extend_heap(size_t words)
     // +++++++++++++++++++++++++++++++++++++++++++++   +++++++++++++++++++++++++++
 
     // +++++++++++++++++++++++++++++++++++++++++++++   +++++++++++++++++++++++++++
-    // +  prologue  +  head  +  foot  +  head      +   ..   +  foot  +  epilogue +
+    // +  prologue  +  head  +  foot  +  head      +   foot  +  ..   +  epilogue +
     // +++++++++++++++++++++++++++++++++++++++++++++   +++++++++++++++++++++++++++
-    //                                              bp
+    //                                                  bp
     PUT(HDRP(bp), PACK(size, 0));
     PUT(FTRP(bp), PACK(size, 0));
     PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1));

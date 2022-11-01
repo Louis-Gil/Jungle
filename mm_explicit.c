@@ -106,7 +106,6 @@ int mm_init(void)
     PUT(heap_listp + 3*WSIZE,NULL); // 프롤로그 SUCC 포인터 NULL로 초기화
     PUT(heap_listp + 4*WSIZE,PACK(16,1)); // 프롤로그 풋터 16/1
     PUT(heap_listp + 5*WSIZE,PACK(0,1)); // 에필로그 헤더 0/1
-
     free_listp = heap_listp + DSIZE; // free_listp를 PRED 포인터 가리키게 초기화
     // Extend the empty heap with a free block of CHUNKSIZE bytes
     if (extend_heap(CHUNKSIZE/WSIZE) == NULL) //word가 몇개인지 확인해서 넣으려고(DSIZE로 나눠도 됨)
