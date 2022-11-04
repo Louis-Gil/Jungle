@@ -1,6 +1,6 @@
 CC = gcc
-TARGET = client
-OBJS = echoclient.o csapp.o
+TARGET = hostinfo
+OBJS = hostinfo.o csapp.o
 
 all : $(TARGET)
 $(TARGET) : $(OBJS)
@@ -10,7 +10,7 @@ csapp.o :
 	$(CC) -c csapp.c
 
 echoclient.o :
-	$(CC) -c echoclient.c
+	$(CC) -c hostinfo.c
 
 clean :
 	rm -f $(OBJS) $(TARGET)
