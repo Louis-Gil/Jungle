@@ -9,8 +9,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
-
-
 #include <string.h>
 #include <ctype.h>
 #include <setjmp.h>
@@ -195,6 +193,7 @@ int open_listenfd(char *port);
 /* Wrappers for reentrant protocol-independent client/server helpers */
 int Open_clientfd(char *hostname, char *port);
 int Open_listenfd(char *port);
+
 
 #endif /* __CSAPP_H__ */
 /* $end csapp.h */
