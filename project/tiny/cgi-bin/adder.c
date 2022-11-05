@@ -11,10 +11,12 @@ int main(void)
     {
         p = strchr(buf, '&');
         *p = '\0';
-        strcpy(arg1, buf);
-        strcpy(arg2, p+1);
+        strcpy(arg1, buf+6);
+        strcpy(arg2, p+7);
         n1 = atoi(arg1);
         n2 = atoi(arg2);
+        // n1 = arg1;
+        // n2 = arg2;
     }
 
     /* Make the response body */
