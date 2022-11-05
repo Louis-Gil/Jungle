@@ -54,11 +54,11 @@ void doit(int fd)
   rio_t rio;
 
   /* Read request line and headers */
-  Rio_readinitb(&rio, fd);
-  Rio_readlineb(&rio, buf, MAXLINE);
+  Rio_readinitb(&rio, fd);            // 읽기 버퍼의 포맷을 초기화
+  Rio_readlineb(&rio, buf, MAXLINE);  // 최대 maxlen-1개의 바이트 읽고 종료용 널 공간 남김
   printf("Request headers:\n");
   printf("%s", buf);
-  sscanf(buf, "%s %s %s", method, uri, version);
+  sscanf(buf, "%s %s %s", method, uri, version);  
   if (strcasecmp(method, "GET"))
   {
     clienterror(fd, method, "501", "Not implemented", "Tiny does not impliment this method");
@@ -100,7 +100,10 @@ void clienterror(int fd, char *cause, char *errnum, char *shortmsg, char *longms
 
   /* Build the HTTP response body */
   sprintf(body, "<html><title>Tiny Error</title>");
-  sprintf(body, "%s<body bgcolor=""ffffff"">\r\n", body);
+  sprintf(body, "%s<body bgcolor="
+                "ffffff"
+                ">\r\n",
+          body);
   sprintf(body, "%s%s: %s\r\n", body, longmsg, cause);
   sprintf(body, "%s<hr><em>The Tiny Web Server</em>\r\n", body);
 
@@ -174,18 +177,21 @@ void serve_static(int fd, char *filename, int filesize)
 
   /* Send response body to client */
   srcfd = Open(filename, O_RDONLY, 0);
-  srcp = Mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
+  // sbrk(sizeof(int)*filesize);
+  srcp = (char *)Malloc(filesize);
+  Rio_readn(srcfd, srcp, filesize);
   Close(srcfd);
+
   Rio_writen(fd, srcp, filesize);
-  Munmap(srcp, filesize);
+  Free(srcp);
 }
 
 /*
-* get_filetype - Derive file type from filename
-*/
+ * get_filetype - Derive file type from filename
+ */
 void get_filetype(char *filename, char *filetype)
 {
-  if(strstr(filename, ".html"))
+  if (strstr(filename, ".html"))
     strcpy(filetype, "text/html");
   else if (strstr(filename, ".gif"))
     strcpy(filetype, "image/gif");
@@ -193,13 +199,15 @@ void get_filetype(char *filename, char *filetype)
     strcpy(filetype, "image/png");
   else if (strstr(filename, ".jpg"))
     strcpy(filetype, "image/jpeg");
+  else if (strstr(filename, ".mpg"))
+    strcpy(filetype, "video/mpeg");
   else
     strcpy(filetype, "text/plain");
 }
 
 void serve_dynamic(int fd, char *filename, char *cgiargs)
 {
-  char buf[MAXLINE], *emptylist[] = { NULL };
+  char buf[MAXLINE], *emptylist[] = {NULL};
 
   /* Return first part of HTTP response */
   sprintf(buf, "HTTP/1.0 200 OK\r\n");
@@ -207,11 +215,11 @@ void serve_dynamic(int fd, char *filename, char *cgiargs)
   sprintf(buf, "server: Tiny Web Server\r\n");
   Rio_writen(fd, buf, strlen(buf));
 
-  if(Fork() == 0) /* child */
+  if (Fork() == 0) /* child */
   {
     /* real server would set all CGI vars here */
     setenv("QUERY_STRING", cgiargs, 1);
-    Dup2(fd, STDOUT_FILENO);  /* Redirect stdout to client */
+    Dup2(fd, STDOUT_FILENO);              /* Redirect stdout to client */
     Execve(filename, emptylist, environ); /* Run CGI program */
   }
   Wait(NULL); /* Parent waits for and reaps child */
