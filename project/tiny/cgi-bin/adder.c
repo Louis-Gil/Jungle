@@ -2,7 +2,7 @@
 
 int main(void)
 {
-    char *buf, *p;
+    char *buf, *p, *method;
     char arg1[MAXLINE], arg2[MAXLINE], content[MAXLINE];
     int n1 = 0, n2 = 0;
 
@@ -11,12 +11,29 @@ int main(void)
     {
         p = strchr(buf, '&');
         *p = '\0';
-        strcpy(arg1, buf+6);
-        strcpy(arg2, p+7);
+        strcpy(arg1, buf + 6);
+        strcpy(arg2, p + 7);
         n1 = atoi(arg1);
         n2 = atoi(arg2);
         // n1 = arg1;
         // n2 = arg2;
+    }
+
+    method = getenv("REQUEST_METHOD");
+    printf("%s", method);
+    if (!strcasecmp(method, "HEAD"))
+    {
+        sprintf(content, "HTTP/1.0 200 OK\r\n");
+        sprintf(content, "%sServer: Tiny Web Server\r\n", content);
+        sprintf(content, "%sConnection: close\r\n", content);
+        sprintf(content, "%sContent-length: %d\r\n", content, strlen(content));
+        sprintf(content, "%sContent-type: text/html\r\n\r\n", content);
+        printf("Response headers:\n");
+        printf("%s", content);
+
+        fflush(stdout);
+
+        exit(0);
     }
 
     /* Make the response body */
@@ -32,6 +49,7 @@ int main(void)
     printf("Content-length: %d\r\n", (int)strlen(content));
     printf("Content-type : text/html \r\n\r\n");
     printf("%s", content);
+
     fflush(stdout);
 
     exit(0);

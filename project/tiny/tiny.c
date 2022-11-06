@@ -11,9 +11,9 @@
 void doit(int fd);
 void read_requesthdrs(rio_t *rp);
 int parse_uri(char *uri, char *filename, char *cgiargs);
-void serve_static(int fd, char *filename, int filesize);
+void serve_static(int fd, char *filename, int filesize, char *method);
 void get_filetype(char *filename, char *filetype);
-void serve_dynamic(int fd, char *filename, char *cgiargs);
+void serve_dynamic(int fd, char *filename, char *cgiargs, char *method);
 void clienterror(int fd, char *cause, char *errnum, char *shortmsg,
                  char *longmsg);
 
@@ -59,7 +59,8 @@ void doit(int fd)
   printf("Request headers:\n");
   printf("%s", buf);
   sscanf(buf, "%s %s %s", method, uri, version);  
-  if (strcasecmp(method, "GET"))
+  
+  if (strcasecmp(method, "GET") && strcasecmp(method, "HEAD"))
   {
     clienterror(fd, method, "501", "Not implemented", "Tiny does not impliment this method");
     return;
@@ -81,7 +82,7 @@ void doit(int fd)
       clienterror(fd, filename, "403", "Forbidden", "Tiny couldn't read the file");
       return;
     }
-    serve_static(fd, filename, sbuf.st_size);
+    serve_static(fd, filename, sbuf.st_size, method);
   }
   else /* Serve dynamic content */
   {
@@ -90,7 +91,7 @@ void doit(int fd)
       clienterror(fd, filename, "403", "Forbidden", "Tiny couldn't run CGI program");
       return;
     }
-    serve_dynamic(fd, filename, cgiargs);
+    serve_dynamic(fd, filename, cgiargs, method);
   }
 }
 
@@ -159,7 +160,7 @@ int parse_uri(char *uri, char *filename, char *cgiargs)
   }
 }
 
-void serve_static(int fd, char *filename, int filesize)
+void serve_static(int fd, char *filename, int filesize, char *method)
 {
   int srcfd;
   char *srcp, filetype[MAXLINE], buf[MAXBUF];
@@ -174,6 +175,12 @@ void serve_static(int fd, char *filename, int filesize)
   Rio_writen(fd, buf, strlen(buf));
   printf("Response headers:\n");
   printf("%s", buf);
+
+  printf("%d\n", strcasecmp(method, "HEAD"));  
+  if(!strcasecmp(method, "HEAD"))
+  {
+    return;
+  }
 
   /* Send response body to client */
   srcfd = Open(filename, O_RDONLY, 0);
@@ -207,7 +214,7 @@ void get_filetype(char *filename, char *filetype)
     strcpy(filetype, "text/plain");
 }
 
-void serve_dynamic(int fd, char *filename, char *cgiargs)
+void serve_dynamic(int fd, char *filename, char *cgiargs, char *method)
 {
   char buf[MAXLINE], *emptylist[] = {NULL};
 
@@ -221,6 +228,7 @@ void serve_dynamic(int fd, char *filename, char *cgiargs)
   {
     /* real server would set all CGI vars here */
     setenv("QUERY_STRING", cgiargs, 1);
+    setenv("REQUEST_METHOD", method, 1);
     Dup2(fd, STDOUT_FILENO);              /* Redirect stdout to client */
     Execve(filename, emptylist, environ); /* Run CGI program */
   }
