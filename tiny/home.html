@@ -1,7 +1,33 @@
 <html>
-<head><title>test</title></head>
-<body> 
-<img align="middle" src="godzilla.gif">
-Dave O'Hallaron
+
+<head>
+    <title>test</title>
+</head>
+<link rel="favicon" href="./favicon.ico">
+
+<body>
+    <div>
+        <img align="middle" src="godzilla.gif">
+        Dave O'Hallaron
+    </div>
+    <div>
+        <video controls width="500">
+            <source src="/movie.mp4" type="video/mp4">
+        </video>
+    </div>
+    <form action="/cgi-bin/adder?" method="get">
+        <div>
+            <label for="name1">Enter numbers to add </label>
+            <input type="text" id="name1" name="name1" required size="10">
+        </div>
+        <div>
+            <label for="name2"></label>
+            <input type="text" id="name2" name="name2" required size="10">
+        </div>
+        <div><input type="submit" value="plus!"></div>
+
+    </form>
+
 </body>
+
 </html>

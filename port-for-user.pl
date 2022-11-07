@@ -24,7 +24,7 @@ sub hashname {
     $port = $hash % ($maxport - $minport) + $minport;
     $port = $port & 0xfffffffe;
     print "$name: $port\n";
-}
+} 
 
 
 # If called with no command line arg, then hash the userid, otherwise
