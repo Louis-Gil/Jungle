@@ -3,26 +3,26 @@
 #ifndef PROXY_WEB_SERVER_CACHE_H
 #define PROXY_WEB_SERVER_CACHE_H
 
-#define MAX_CACHE_SIZE 1049000
-#define MAX_OBJECT_SIZE 102400
+#define MAX_CACHE_SIZE      1049000
+#define MAX_OBJECT_SIZE     102400
+#define MAX_CACHE_COUNT     10
 
-typedef struct Cache_node_type
-{
-    char header[MAX_OBJECT_SIZE];
-    int payload[MAX_OBJECT_SIZE];
-    struct Cache_node_type* prev;
-    struct Cache_node_type* next;
-}Cache_node;
+typedef struct CacheNodeType{
+    char url[MAX_OBJECT_SIZE];//별자
+    char data[MAX_CACHE_SIZE];
+    struct CacheNodeType* prev;
+    struct CacheNodeType* next;
+}CacheNode;
 
-typedef struct Cache_list_type
-{
-    int CurrentElementCount;
-    Cache_node* frontNode;
-    Cache_node* rearNode; 
-}Cache_List;
+typedef struct CacheListType{
+    int currentElementCount;
+    CacheNode* frontNode;
+    CacheNode* rearNode;
+}CacheList;
 
-Cache_List* initCache();
-void insertNode();
-void deleteNode();
+CacheList * initCache();
+void insertCacheNode(CacheList *list, char *url,char* response);
+void deleteCache(CacheList *list);
+char* findCacheNode(CacheList* list,char* url);
 
 #endif //PROXY_WEB_SERVER_CACHE_H
