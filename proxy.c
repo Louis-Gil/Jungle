@@ -90,17 +90,21 @@ void doit(int fd)
     printf("=======Receive Request From Client=======\n");
     read_requesthdrs(&client_rio);
 
-    // P(&mutex);
+
     /*
      * 여기서 캐시에 데이터가 있으면 리턴
      * 요청 헤더의 파싱된 값들을 통해서 캐시 블록을 insert
      * */
+    P(&mutex);
     char* ret = findCacheNode(cacheList, url);
     if (ret != NULL) {
         printf("=======Receive Request is In Cache=======\n");
         Rio_writen(fd, ret, MAX_OBJECT_SIZE);
         return;
     }
+    V(&mutex);
+
+
     printf("=======Receive Request is Not In Cache=======\n");
 
     /* 프록시 서버 to 타겟 서버 처리*/
@@ -110,11 +114,14 @@ void doit(int fd)
     make_request_to_server(serverFd, uri, host, port, method, version, filename);
     printf("=======Receive Request From Server=======\n");
     Rio_readnb(&server_rio, response, MAX_OBJECT_SIZE);
+
+    P(&mutex);
     insertCacheNode(cacheList, url, response);
+    V(&mutex);
     printf("%s", response);
     Close(serverFd);
 
-    // V(&mutex);
+
 
     /* 클라이언트 to 프록시 서버 내용 보냄 */
     printf("=======Send Response To Client=======\n");
