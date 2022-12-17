@@ -1,3 +1,4 @@
+# https://www.acmicpc.net/problem/1978
 import sys
 num = input()
 a = list(map(int, sys.stdin.readline().split()))
