@@ -1,3 +1,4 @@
+# https://www.acmicpc.net/problem/2628
 import sys
 
 # sys.stdin = open('01\input.txt', 'r')

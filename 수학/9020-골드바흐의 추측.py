@@ -1,3 +1,4 @@
+# https://www.acmicpc.net/problem/9020
 import sys
 import math
 a = int(sys.stdin.readline())
