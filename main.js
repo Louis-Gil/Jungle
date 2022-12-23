@@ -68,6 +68,7 @@ async function main() {
       addChange(editor, from, to, change.content || "");
       // editor.replaceRange(change.content, from, to, 'yorkie')
     }
+    editor.setValue(doc.getRoot().content.toString());
   });
 }
 main();
