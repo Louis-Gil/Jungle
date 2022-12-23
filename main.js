@@ -54,9 +54,9 @@ async function main() {
   });
   // (2) Yorkie
   doc.getRoot().content.text.onChanges((changes) => {
-    console.log(changes);
     // (1)
     for (const change of changes) {
+      console.log(changes);
       // (2)
       if (change.type !== "content" || change.actor === client.getID()) {
         continue;
@@ -65,10 +65,10 @@ async function main() {
       const from = editor.posFromIndex(change.from);
       const to = editor.posFromIndex(change.to);
       // (4), (5)
-      addChange(editor, from, to, change.content || "");
+      addChange(editor, from, to, change.content || '');
       // editor.replaceRange(change.content, from, to, 'yorkie')
     }
-    editor.setValue(doc.getRoot().content.toString());
   });
+  editor.setValue(doc.getRoot().content.toString());
 }
 main();
