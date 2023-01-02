@@ -1,4 +1,5 @@
 # https://www.acmicpc.net/problem/10974
+# 순열
 import sys
 
 Num = int(sys.stdin.readline())

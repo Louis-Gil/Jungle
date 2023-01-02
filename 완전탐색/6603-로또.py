@@ -1,4 +1,5 @@
 # https://www.acmicpc.net/problem/6603
+# 조합
 import sys
 
 def combinations(arr, r):
