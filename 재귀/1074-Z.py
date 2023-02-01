@@ -1,3 +1,4 @@
+# https://www.acmicpc.net/problem/1074
 import sys
 
 n, row, col = map(int, sys.stdin.readline().split())
