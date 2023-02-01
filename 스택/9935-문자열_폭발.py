@@ -11,6 +11,7 @@ result = []
 
 for char in text_line:
     result.append(char)
+    # print(result[-len(boom):])
     if char == last_char and ''.join(result[-len(boom):]) == boom:
         del result[-len(boom):]
     

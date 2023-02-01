@@ -1,7 +1,8 @@
-import sys
-sys.stdin = open('01\input.txt', 'r')
-
-n = int(sys.stdin.readline())
+# https://www.acmicpc.net/problem/9663
+# import sys
+# sys.stdin = open('01\input.txt', 'r')
+# n = int(sys.stdin.readline())
+n = 8
 
 pos = [0] * n
 flag1 = [False] * n
