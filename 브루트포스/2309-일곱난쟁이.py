@@ -1,5 +1,5 @@
+# https://www.acmicpc.net/problem/2309
 import sys
-sys.stdin = open('01\input.txt', 'r')
 
 lst = []
 for _ in range(9):
@@ -8,8 +8,6 @@ for _ in range(9):
 
 def nanjang(lst):
     lst.sort()
-    # print(lst)
-
     for i in range(9):
         for j in range(9):
             if i != j:

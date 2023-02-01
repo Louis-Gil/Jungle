@@ -1,10 +1,9 @@
+# https://www.acmicpc.net/problem/2798
 import sys
 import itertools
-# sys.stdin = open('01\input.txt', 'r')
 
 Get_list = list(map(int, sys.stdin.readline().split()))
-Num = Get_list[0]
-Max_num = Get_list[1]
+Num, Max_num = Get_list
 
 card_list = list(map(int, sys.stdin.readline().split()))
 card_list.sort()

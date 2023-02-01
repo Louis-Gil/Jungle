@@ -1,7 +1,6 @@
+# https://www.acmicpc.net/problem/10819
 import sys
 from itertools import permutations
-# sys.stdin = open('01\input.txt', 'r')
-
 
 n = int(input())
 arr = list(map(int, input().split()))
