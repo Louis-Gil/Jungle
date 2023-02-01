@@ -1,6 +1,5 @@
 from typing import MutableSequence
 import sys
-sys.stdin = open('01\input.txt', 'r')
 
 def sort3(a, idx1, idx2, idx3):
     if a[idx2] < a[idx1] : a[idx2],a[idx1] = a[idx1],a[idx2]
