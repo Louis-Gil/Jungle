@@ -1,7 +1,6 @@
+# https://www.acmicpc.net/problem/2504
 import sys
-# sys.stdin = open('02\input.txt', 'r')
 word = sys.stdin.readline().rstrip()
-# print(word, count)
 
 stack1 = []
 tmp = 1

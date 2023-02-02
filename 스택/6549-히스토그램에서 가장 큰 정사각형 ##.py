@@ -1,6 +1,5 @@
 from collections import deque
 import sys
-sys.stdin = open('02\input.txt', 'r')
 while True:
     rec = list(map(int, sys.stdin.readline().split()))
     n = rec.pop(0)

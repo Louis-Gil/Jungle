@@ -1,11 +1,8 @@
-from collections import deque
+# https://www.acmicpc.net/problem/2493
 import sys
-# sys.stdin = open('02\input.txt', 'r')
 building_num = int(sys.stdin.readline())
 building_lst = list(map(int, sys.stdin.readline().split()))
-# building_lst = deque(sys.stdin.readline().replace(" ",""))
 temp = 0
-
 
 stack1 = []
 answer = []

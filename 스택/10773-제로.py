@@ -1,5 +1,4 @@
 import sys
-# sys.stdin = open('02\input.txt', 'r')
 
 word_num = int(sys.stdin.readline())
 word_lst = []

@@ -1,5 +1,4 @@
 import sys
-# sys.stdin = open('02\input.txt', 'r')
 number_num, delete_num = list(map(int, sys.stdin.readline().split()))
 Big_num = str(sys.stdin.readline()).rstrip()
 k, stack = delete_num, []
