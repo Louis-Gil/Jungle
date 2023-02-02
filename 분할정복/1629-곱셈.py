@@ -1,5 +1,5 @@
+# https://www.acmicpc.net/problem/1629
 import sys
-# sys.stdin = open('02\input.txt', 'r')
 
 X, Y, Z = list(map(int, sys.stdin.readline().split()))
 answer = []

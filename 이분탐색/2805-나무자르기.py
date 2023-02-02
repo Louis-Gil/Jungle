@@ -1,5 +1,5 @@
+# https://www.acmicpc.net/problem/2805
 import sys
-# sys.stdin = open('02\input.txt', 'r')
 trees_num, needs = (map(int, sys.stdin.readline().split()))
 trees_list = list(map(int, sys.stdin.readline().split()))
 # print(trees_num, needs, trees_list)

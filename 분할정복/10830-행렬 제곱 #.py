@@ -1,5 +1,5 @@
+# acmicpc.net/problem/10830
 import sys
-# sys.stdin = open('02\input.txt', 'r')
 
 line_num, square = list(map(int, sys.stdin.readline().split()))
 lst = []

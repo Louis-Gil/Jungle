@@ -1,7 +1,6 @@
 import sys
 from bisect import bisect_left
 
-sys.stdin = open('02\input.txt', 'r')
 input = sys.stdin.readline
 
 sadae_num, animal_num, rifle =  map(int, sys.stdin.readline().split())

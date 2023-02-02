@@ -1,5 +1,4 @@
 import sys
-sys.stdin = open('02\input.txt', 'r')
 
 house_num, IPtime = list(map(int, sys.stdin.readline().split()))
 house_list = []
