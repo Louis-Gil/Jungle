@@ -23,7 +23,7 @@ for i in roads:
     if not heap:
         heapq.heappush(heap, i)
     else:
-        while heap[0][0] < i[1] - korail:
+        while heap[0][0] + korail < i[1]:
             heapq.heappop(heap)
             if not heap:
                 break
