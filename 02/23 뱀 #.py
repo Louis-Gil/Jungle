@@ -1,6 +1,5 @@
 from collections import deque
 import sys
-# sys.stdin = open('02\input.txt', 'r')
 
 field_num = int(sys.stdin.readline())
 apple_num = int(sys.stdin.readline())
