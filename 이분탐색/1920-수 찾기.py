@@ -1,14 +1,12 @@
 from bisect import bisect_left, bisect_right
 from collections import Counter
 import sys
-sys.stdin = open('02\input.txt', 'r')
 
 card_num = int(sys.stdin.readline())
 card_lst = list(map(int, sys.stdin.readline().split()))
 card_lst.sort()
 find_num = int(sys.stdin.readline())
 find_lst = list(map(int, sys.stdin.readline().split()))
-# print(card_num, card_lst, find_num, find_lst)
 result_lst = []
 
 # 1안
