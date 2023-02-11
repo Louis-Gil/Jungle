@@ -1,3 +1,4 @@
+# https://www.acmicpc.net/problem/1432
 import heapq
 
 n = int(input())
