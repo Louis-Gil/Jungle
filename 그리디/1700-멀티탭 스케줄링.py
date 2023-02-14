@@ -1,3 +1,5 @@
+# https://www.acmicpc.net/problem/1700
+
 # 멀티탭 스케줄링
 import sys
 input = sys.stdin.readline
