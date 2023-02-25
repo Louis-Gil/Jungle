@@ -12,43 +12,37 @@ export class WalletService {
   apiBaseUrl = 'https://api.1inch.io/v5.0/' + this.chainId;
 
   async quote(tokenAddress, walletAddress) {
-    // const remain = await this.checkApprove(tokenAddress, walletAddress);
-    const approve = await this.txApprove(tokenAddress, `1000000000000000000`);
-    return approve;
+    const remain = await this.oneInchApi('/approve/allowance', {
+      tokenAddress,
+      walletAddress,
+    });
+    const approve = await this.oneInchApi('/approve/transaction', {
+      tokenAddress,
+      amount: `1000000000000000000`,
+    });
+    approve.from = this.wallet.address;
+    approve.gas = 100000;
+    
+    // const transaction = await this.web3.eth.sendTransaction(approve);
+
+    const result = [];
+    result.push(remain);
+    result.push(approve);
+    // result.push(transaction);
+    return result;
   }
 
   async swap() {
     return 'swap';
   }
 
-  async apiRequestUrl(methodName, queryParams) {
-    return (
-      this.apiBaseUrl +
-      methodName +
-      '?' +
-      new URLSearchParams(queryParams).toString()
-    );
-  }
-
-  async checkApprove(tokenAddress, walletAddress) {
+  async oneInchApi(methodName, queryParams) {
     try {
-      const url = await this.apiRequestUrl('/approve/allowance', {
-        tokenAddress,
-        walletAddress,
-      });
-      const { data } = await axios.get(url);
-      return data;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async txApprove(tokenAddress, amount) {
-    try {
-      const url = await this.apiRequestUrl('/approve/transaction', {
-        tokenAddress,
-        amount,
-      });
+      const url =
+        this.apiBaseUrl +
+        methodName +
+        '?' +
+        new URLSearchParams(queryParams).toString();
       const { data } = await axios.get(url);
       return data;
     } catch (e) {
