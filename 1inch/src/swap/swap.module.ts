@@ -4,6 +4,6 @@ import { SwapService } from './swap.service';
 
 @Module({
   controllers: [SwapController],
-  providers: [SwapService]
+  providers: [SwapService],
 })
 export class SwapModule {}
