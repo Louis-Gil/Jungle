@@ -6,8 +6,11 @@ export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
   @Get('/quote')
-  async quote() {
-    return this.walletService.quote();
+  async quote(
+    tokenAddress: string = process.env.TOKEN_ADDRESS,
+    walletAddress: string = process.env.WALLET_ADDRESS,
+  ) {
+    return this.walletService.quote(tokenAddress, walletAddress);
   }
 
   @Post('/swap')

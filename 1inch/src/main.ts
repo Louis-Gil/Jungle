@@ -1,3 +1,5 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
 import { SuccessInterceptor } from './common/interceptors/success.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { NestFactory } from '@nestjs/core';
