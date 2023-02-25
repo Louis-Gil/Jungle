@@ -12,8 +12,9 @@ export class WalletService {
   apiBaseUrl = 'https://api.1inch.io/v5.0/' + this.chainId;
 
   async quote(tokenAddress, walletAddress) {
-    const remain = await this.checkCoin(tokenAddress, walletAddress);
-    return remain;
+    // const remain = await this.checkApprove(tokenAddress, walletAddress);
+    const approve = await this.txApprove(tokenAddress, `1000000000000000000`);
+    return approve;
   }
 
   async swap() {
@@ -29,11 +30,24 @@ export class WalletService {
     );
   }
 
-  async checkCoin(tokenAddress, walletAddress) {
+  async checkApprove(tokenAddress, walletAddress) {
     try {
       const url = await this.apiRequestUrl('/approve/allowance', {
         tokenAddress,
         walletAddress,
+      });
+      const { data } = await axios.get(url);
+      return data;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async txApprove(tokenAddress, amount) {
+    try {
+      const url = await this.apiRequestUrl('/approve/transaction', {
+        tokenAddress,
+        amount,
       });
       const { data } = await axios.get(url);
       return data;
