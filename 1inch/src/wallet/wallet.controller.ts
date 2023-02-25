@@ -7,10 +7,17 @@ export class WalletController {
 
   @Get('/quote')
   async quote(
-    tokenAddress: string = process.env.TOKEN_ADDRESS,
+    fromTokenAddress: string = process.env.FROMTOKEN_ADDRESS,
+    toTokenAddress: string = process.env.TOTOKEN_ADDRESS,
     walletAddress: string = process.env.WALLET_ADDRESS,
+    amount: string = process.env.AMOUNT,
   ) {
-    return this.walletService.quote(tokenAddress, walletAddress);
+    return this.walletService.quote(
+      fromTokenAddress,
+      toTokenAddress,
+      walletAddress,
+      amount,
+    );
   }
 
   @Post('/swap')
