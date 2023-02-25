@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import Web3 from 'web3';
+import { Web3Service } from 'nest-web3';
 
 @Injectable()
 export class WalletService {
-  web3RpcUrl = 'https://rpc-mainnet.matic.network';
-  web3 = new Web3(this.web3RpcUrl);
+  constructor(private readonly web3Service: Web3Service) {}
 
+  web3 = this.web3Service.getClient('eth');
+  wallet = this.web3.eth.accounts.wallet.add(process.env.PRIVATE_KEY);
   chainId = 137;
   apiBaseUrl = 'https://api.1inch.io/v5.0/' + this.chainId;
 
@@ -20,16 +21,21 @@ export class WalletService {
   }
 
   async apiRequestUrl(methodName, queryParams) {
-    return this.apiBaseUrl + methodName
-      ? new URLSearchParams(queryParams).toString()
-      : '';
+    return (
+      this.apiBaseUrl +
+      methodName +
+      '?' +
+      new URLSearchParams(queryParams).toString()
+    );
   }
 
   async checkCoin(tokenAddress, walletAddress) {
     try {
-      const { data } = await axios.get(
-        `https://api.1inch.io/v5.0/137/approve/allowance?tokenAddress=${tokenAddress}&walletAddress=${walletAddress}`,
-      );
+      const url = await this.apiRequestUrl('/approve/allowance', {
+        tokenAddress,
+        walletAddress,
+      });
+      const { data } = await axios.get(url);
       return data;
     } catch (e) {
       console.log(e);
