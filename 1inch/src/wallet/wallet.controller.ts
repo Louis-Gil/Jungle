@@ -1,4 +1,6 @@
 import { Controller, Get, Post } from '@nestjs/common';
+import { Body } from '@nestjs/common/decorators';
+import { WalletRequestDto } from './dto/wallet.dto';
 import { WalletService } from './wallet.service';
 
 @Controller('wallet')
@@ -6,34 +8,12 @@ export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
   @Get('/quote')
-  async quote(
-    fromTokenAddress: string = process.env.FROMTOKEN_ADDRESS,
-    toTokenAddress: string = process.env.TOTOKEN_ADDRESS,
-    walletAddress: string = process.env.WALLET_ADDRESS,
-    amount: string = process.env.AMOUNT,
-  ) {
-    return this.walletService.getQuote(
-      fromTokenAddress,
-      toTokenAddress,
-      walletAddress,
-      amount,
-    );
+  async Quote(@Body() walletRequestDto: WalletRequestDto) {
+    return this.walletService.getQuote(walletRequestDto);
   }
 
   @Post('/swap')
-  async swap(
-    fromTokenAddress: string = process.env.FROMTOKEN_ADDRESS,
-    toTokenAddress: string = process.env.TOTOKEN_ADDRESS,
-    walletAddress: string = process.env.WALLET_ADDRESS,
-    amount: string = process.env.AMOUNT,
-    slippage = 0.1,
-  ) {
-    return this.walletService.postSwap(
-      fromTokenAddress,
-      toTokenAddress,
-      walletAddress,
-      amount,
-      slippage,
-    );
+  async Swap(@Body() walletRequestDto: WalletRequestDto) {
+    return this.walletService.postSwap(walletRequestDto);
   }
 }

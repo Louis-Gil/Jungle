@@ -1,3 +1,4 @@
+import { WalletRequestDto } from './dto/wallet.dto';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { Web3Service } from 'nest-web3';
@@ -7,11 +8,12 @@ export class WalletService {
   constructor(private readonly web3Service: Web3Service) {}
 
   web3 = this.web3Service.getClient('eth');
-  wallet = this.web3.eth.accounts.wallet.add(process.env.PRIVATE_KEY);
   chainId = 137;
   apiBaseUrl = 'https://api.1inch.io/v5.0/' + this.chainId;
 
-  async getQuote(fromTokenAddress, toTokenAddress, walletAddress, amount) {
+  async getQuote(walletRequestDto: WalletRequestDto) {
+    const { fromTokenAddress, toTokenAddress, walletAddress, amount, mode } =
+      walletRequestDto;
     const result = [];
     const remain = await this.oneInchApi('/approve/allowance', {
       tokenAddress: fromTokenAddress,
@@ -27,29 +29,25 @@ export class WalletService {
     return result;
   }
 
-  async postSwap(
-    fromTokenAddress,
-    toTokenAddress,
-    walletAddress,
-    amount,
-    slippage,
-  ) {
-    const result = [];
-    const quote = await this.getQuote(
+  async postSwap(walletRequestDto: WalletRequestDto) {
+    const {
       fromTokenAddress,
       toTokenAddress,
       walletAddress,
       amount,
-    );
+      mode,
+      slippage,
+      private_key,
+    } = walletRequestDto;
+
+    const result = [];
+    const wallet = this.web3.eth.accounts.wallet.add(private_key);
+    const quote = await this.getQuote(walletRequestDto);
     result.push(quote);
     console.log('after quote');
 
     if (fromTokenAddress != '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
-      const approve = await this.approve(
-        fromTokenAddress,
-        walletAddress,
-        amount,
-      );
+      const approve = await this.approve(fromTokenAddress, wallet, amount);
       result.push(approve);
     }
 
@@ -57,7 +55,7 @@ export class WalletService {
       fromTokenAddress,
       toTokenAddress,
       amount,
-      fromAddress: this.wallet.address,
+      fromAddress: wallet.address,
       slippage,
       disableEstimate: true,
     });
@@ -91,7 +89,7 @@ export class WalletService {
     }
   }
 
-  async approve(tokenAddress, walletAddress, amount) {
+  async approve(tokenAddress, wallet, amount) {
     try {
       const approve = await this.oneInchApi('/approve/transaction', {
         tokenAddress,
@@ -100,7 +98,7 @@ export class WalletService {
       console.log(approve);
 
       approve.gas = 1000000;
-      approve.from = this.wallet.address;
+      approve.from = wallet.address; //check
 
       const transaction = await this.web3.eth.sendTransaction(approve);
       console.log(transaction);
