@@ -12,6 +12,7 @@ export class WalletService {
   apiBaseUrl = 'https://api.1inch.io/v5.0/' + this.chainId;
 
   async quote(fromTokenAddress, toTokenAddress, walletAddress, amount) {
+    const result = [];
     const remain = await this.oneInchApi('/approve/allowance', {
       tokenAddress: fromTokenAddress,
       walletAddress,
@@ -21,13 +22,13 @@ export class WalletService {
       toTokenAddress,
       amount,
     });
-    const result = [];
     result.push(remain);
     result.push(quotes);
     return result;
   }
 
   async swap(fromTokenAddress, toTokenAddress, walletAddress, amount) {
+    const result = [];
     const quote = await this.quote(
       fromTokenAddress,
       toTokenAddress,
@@ -35,11 +36,17 @@ export class WalletService {
       amount,
     );
 
+    if (fromTokenAddress != '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
+      const approve = await this.approve(
+        fromTokenAddress,
+        walletAddress,
+        amount,
+      );
+      result.push(approve);
+    }
+
+    result.push(quote);
     return quote;
-    // if (tokenAddress != '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
-    //   const approve = await this.approve(tokenAddress);
-    //   result.push(approve);
-    // }
   }
 
   async oneInchApi(methodName, queryParams) {
@@ -56,12 +63,12 @@ export class WalletService {
     }
   }
 
-  async approve(tokenAddress) {
+  async approve(tokenAddress, walletAddress, amount) {
     const approve = await this.oneInchApi('/approve/transaction', {
       tokenAddress,
-      amount: `1000000000000000000`,
+      amount,
     });
-    approve.from = this.wallet.address;
+    approve.from = walletAddress;
     approve.gas = 1000000;
 
     // const transaction = await this.web3.eth.sendTransaction(approve);
