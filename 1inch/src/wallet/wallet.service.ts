@@ -27,7 +27,13 @@ export class WalletService {
     return result;
   }
 
-  async swap(fromTokenAddress, toTokenAddress, walletAddress, amount) {
+  async swap(
+    fromTokenAddress,
+    toTokenAddress,
+    walletAddress,
+    amount,
+    slippage,
+  ) {
     const result = [];
     const quote = await this.quote(
       fromTokenAddress,
@@ -45,7 +51,19 @@ export class WalletService {
       result.push(approve);
     }
 
+    const swap = await this.oneInchApi('/swap', {
+      fromTokenAddress,
+      toTokenAddress,
+      amount,
+      fromAddress: walletAddress,
+      slippage,
+    });
+
+    const transaction = await this.web3.eth.sendTransaction(swap);
+
     result.push(quote);
+    result.push(swap);
+    result.push(transaction);
     return quote;
   }
 
@@ -71,7 +89,7 @@ export class WalletService {
     approve.from = walletAddress;
     approve.gas = 1000000;
 
-    // const transaction = await this.web3.eth.sendTransaction(approve);
-    return approve;
+    const transaction = await this.web3.eth.sendTransaction(approve);
+    return transaction;
   }
 }

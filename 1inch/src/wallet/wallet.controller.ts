@@ -26,12 +26,14 @@ export class WalletController {
     toTokenAddress: string = process.env.TOTOKEN_ADDRESS,
     walletAddress: string = process.env.WALLET_ADDRESS,
     amount: string = process.env.AMOUNT,
+    slippage = 0.1,
   ) {
     return this.walletService.swap(
       fromTokenAddress,
       toTokenAddress,
       walletAddress,
       amount,
+      slippage,
     );
   }
 }
