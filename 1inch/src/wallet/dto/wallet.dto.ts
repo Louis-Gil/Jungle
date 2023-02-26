@@ -7,3 +7,8 @@ export class WalletRequestDto {
   slippage?: number;
   private_key?: string;
 }
+
+export class QuoteDto {
+  amount: string;
+  estimatedGas: number;
+}

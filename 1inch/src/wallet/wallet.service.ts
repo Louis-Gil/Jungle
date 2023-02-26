@@ -1,4 +1,4 @@
-import { WalletRequestDto } from './dto/wallet.dto';
+import { QuoteDto, WalletRequestDto } from './dto/wallet.dto';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { Web3Service } from 'nest-web3';
@@ -14,19 +14,9 @@ export class WalletService {
   async getQuote(walletRequestDto: WalletRequestDto) {
     const { fromTokenAddress, toTokenAddress, walletAddress, amount, mode } =
       walletRequestDto;
-    const result = [];
-    const remain = await this.oneInchApi('/approve/allowance', {
-      tokenAddress: fromTokenAddress,
-      walletAddress,
-    });
-    const quotes = await this.oneInchApi('/quote', {
-      fromTokenAddress,
-      toTokenAddress,
-      amount,
-    });
-    result.push(remain);
-    result.push(quotes);
-    return result;
+
+    const quoteAmount: QuoteDto = await this.quote(walletRequestDto);
+    return quoteAmount;
   }
 
   async postSwap(walletRequestDto: WalletRequestDto) {
@@ -41,6 +31,10 @@ export class WalletService {
     } = walletRequestDto;
 
     const result = [];
+    const remain = await this.oneInchApi('/approve/allowance', {
+      tokenAddress: fromTokenAddress,
+      walletAddress,
+    });
     const wallet = this.web3.eth.accounts.wallet.add(private_key);
     const quote = await this.getQuote(walletRequestDto);
     result.push(quote);
@@ -111,5 +105,33 @@ export class WalletService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async quote(WalletRequestDto: WalletRequestDto) {
+    const { fromTokenAddress, toTokenAddress, walletAddress, amount, mode } =
+      WalletRequestDto;
+    const quoteDto = new QuoteDto();
+
+    if (mode == 'fixed_from_amount') {
+      const quoteAmount = await this.oneInchApi('/quote', {
+        fromTokenAddress,
+        toTokenAddress,
+        amount,
+      });
+      quoteDto.amount = quoteAmount.toTokenAmount;
+      quoteDto.estimatedGas = quoteAmount.estimatedGas;
+    } else if (mode == 'fixed_to_amount') {
+      const quoteAmount = await this.oneInchApi('/quote', {
+        fromTokenAddress,
+        toTokenAddress,
+        amount,
+      });
+      quoteDto.amount = (
+        quoteAmount.fromTokenAmount / quoteAmount.toTokenAmount
+      ).toString();
+      quoteDto.estimatedGas = quoteAmount.estimatedGas;
+    }
+
+    return quoteDto;
   }
 }
