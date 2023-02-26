@@ -12,7 +12,7 @@ export class WalletController {
     walletAddress: string = process.env.WALLET_ADDRESS,
     amount: string = process.env.AMOUNT,
   ) {
-    return this.walletService.quote(
+    return this.walletService.getQuote(
       fromTokenAddress,
       toTokenAddress,
       walletAddress,
@@ -28,7 +28,7 @@ export class WalletController {
     amount: string = process.env.AMOUNT,
     slippage = 0.1,
   ) {
-    return this.walletService.swap(
+    return this.walletService.postSwap(
       fromTokenAddress,
       toTokenAddress,
       walletAddress,
