@@ -44,40 +44,36 @@ export class WalletService {
     result.push(quote);
     console.log('after quote');
 
-    // if (fromTokenAddress != '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
-    //   const approve = await this.approve(
-    //     fromTokenAddress,
-    //     walletAddress,
-    //     amount,
-    //   );
-    //   result.push(approve);
-    // }
+    if (fromTokenAddress != '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
+      const approve = await this.approve(
+        fromTokenAddress,
+        walletAddress,
+        amount,
+      );
+      result.push(approve);
+    }
 
-    const approve = await this.approve(fromTokenAddress, walletAddress, amount);
-    result.push(approve);
+    const response = await this.oneInchApi('/swap', {
+      fromTokenAddress,
+      toTokenAddress,
+      amount,
+      fromAddress: this.wallet.address,
+      slippage,
+      disableEstimate: true,
+    });
 
-    // const { data } = await this.oneInchApi('/swap', {
-    //   fromTokenAddress,
-    //   toTokenAddress,
-    //   amount,
-    //   fromAddress: this.wallet.address,
-    //   slippage,
-    //   disableEstimate: true,
-    // });
+    console.log(response);
+    response.tx.gas = 1000000;
+    const transaction = await this.web3.eth.sendTransaction(response.tx);
 
-    // console.log(data);
-    // data.tx.gas = 1000000;
-    // const transaction = await this.web3.eth.sendTransaction(data.tx);
+    if (transaction.status) {
+      console.log('Transaction success');
+    } else {
+      console.log('Transaction failed');
+    }
 
-    // if (transaction.status) {
-    //   console.log('Transaction success');
-    // } else {
-    //   console.log('Transaction failed');
-    // }
-
-    // result.push(quote);
-    // result.push(data);
-    // result.push(transaction);
+    result.push(quote);
+    result.push(transaction);
     return result;
   }
 
@@ -96,22 +92,26 @@ export class WalletService {
   }
 
   async approve(tokenAddress, walletAddress, amount) {
-    const approve = await this.oneInchApi('/approve/transaction', {
-      tokenAddress,
-      amount,
-    });
-    console.log(approve);
+    try {
+      const approve = await this.oneInchApi('/approve/transaction', {
+        tokenAddress,
+        amount,
+      });
+      console.log(approve);
 
-    approve.gas = 1000000;
-    approve.from = this.wallet.address;
+      approve.gas = 1000000;
+      approve.from = this.wallet.address;
 
-    const transaction = await this.web3.eth.sendTransaction(approve);
-    console.log(transaction);
-    if (transaction.status) {
-      console.log('Transaction success');
-    } else {
-      console.log('Transaction failed');
+      const transaction = await this.web3.eth.sendTransaction(approve);
+      console.log(transaction);
+      if (transaction.status) {
+        console.log('Transaction success');
+      } else {
+        console.log('Transaction failed');
+      }
+      return transaction;
+    } catch (e) {
+      console.log(e);
     }
-    return transaction;
   }
 }
