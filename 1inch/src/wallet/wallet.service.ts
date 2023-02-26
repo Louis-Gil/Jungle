@@ -12,7 +12,6 @@ export class WalletService {
   apiBaseUrl = 'https://api.1inch.io/v5.0/' + this.chainId;
 
   async quote(fromTokenAddress, toTokenAddress, walletAddress, amount) {
-    const result = [];
     const remain = await this.oneInchApi('/approve/allowance', {
       tokenAddress: fromTokenAddress,
       walletAddress,
@@ -22,13 +21,21 @@ export class WalletService {
       toTokenAddress,
       amount,
     });
+    const result = [];
     result.push(remain);
     result.push(quotes);
     return result;
   }
 
-  async swap() {
-    return 'swap';
+  async swap(fromTokenAddress, toTokenAddress, walletAddress, amount) {
+    const quote = await this.quote(
+      fromTokenAddress,
+      toTokenAddress,
+      walletAddress,
+      amount,
+    );
+
+    return quote;
     // if (tokenAddress != '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
     //   const approve = await this.approve(tokenAddress);
     //   result.push(approve);

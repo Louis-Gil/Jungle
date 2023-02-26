@@ -21,7 +21,17 @@ export class WalletController {
   }
 
   @Post('/swap')
-  async swap() {
-    return this.walletService.swap();
+  async swap(
+    fromTokenAddress: string = process.env.FROMTOKEN_ADDRESS,
+    toTokenAddress: string = process.env.TOTOKEN_ADDRESS,
+    walletAddress: string = process.env.WALLET_ADDRESS,
+    amount: string = process.env.AMOUNT,
+  ) {
+    return this.walletService.swap(
+      fromTokenAddress,
+      toTokenAddress,
+      walletAddress,
+      amount,
+    );
   }
 }
