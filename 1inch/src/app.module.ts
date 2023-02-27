@@ -10,7 +10,7 @@ import { WalletModule } from './wallet/wallet.module';
     ConfigModule.forRoot({ isGlobal: true }),
     Web3Module.forRoot({
       name: 'eth',
-      url: 'https://rpc-mainnet.matic.network',
+      url: 'https://polygon-mainnet.g.alchemy.com/v2/60rwZcE5wFclpIwf7DjIxVteNUixtMlg',
     }),
     WalletModule,
   ],
