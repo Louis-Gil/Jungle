@@ -1,5 +1,5 @@
 import { QuoteDto, WalletRequestDto } from './dto/wallet.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import axios from 'axios';
 import { Web3Service } from 'nest-web3';
 
@@ -73,8 +73,8 @@ export class WalletService {
         new URLSearchParams(queryParams).toString();
       const { data } = await axios.get(url);
       return data;
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      throw new HttpException(`oneInchApi err : ${err}`, 500);
     }
   }
 
@@ -97,8 +97,8 @@ export class WalletService {
         console.log('Transaction failed');
       }
       return transaction;
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      throw new HttpException(`approve err : ${err}`, 500);
     }
   }
 
@@ -112,21 +112,25 @@ export class WalletService {
       amount,
     });
 
-    if (mode == 'fixed_from_amount') {
-      quoteDto.amount = quoteAmount.toTokenAmount;
-      quoteDto.estimatedGas = quoteAmount.estimatedGas;
-    } else if (mode == 'fixed_to_amount') {
-      quoteDto.amount = (
-        quoteAmount.fromTokenAmount ** 2 /
-        quoteAmount.toTokenAmount
-      ).toString();
-      quoteDto.estimatedGas = Math.max(
-        240000,
-        (quoteAmount.estimatedGas * quoteAmount.fromTokenAmount) /
-          quoteAmount.toTokenAmount,
-      );
-    }
+    try {
+      if (mode == 'fixed_from_amount') {
+        quoteDto.amount = quoteAmount.toTokenAmount;
+        quoteDto.estimatedGas = quoteAmount.estimatedGas;
+      } else if (mode == 'fixed_to_amount') {
+        quoteDto.amount = (
+          quoteAmount.fromTokenAmount ** 2 /
+          quoteAmount.toTokenAmount
+        ).toString();
+        quoteDto.estimatedGas = Math.max(
+          240000,
+          (quoteAmount.estimatedGas * quoteAmount.fromTokenAmount) /
+            quoteAmount.toTokenAmount,
+        );
+      }
 
-    return quoteDto;
+      return quoteDto;
+    } catch (error) {
+      throw new HttpException(`quote err : ${error}`, 500);
+    }
   }
 }
