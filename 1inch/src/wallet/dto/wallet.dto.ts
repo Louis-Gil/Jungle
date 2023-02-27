@@ -28,7 +28,11 @@ export class WalletRequestDto {
 export class QuoteDto {
   @IsNotEmpty()
   @IsString()
-  amount: string;
+  fromAmount: string;
+
+  @IsNotEmpty()
+  @IsString()
+  toAmount: string;
 
   @IsNotEmpty()
   @IsNumber()
