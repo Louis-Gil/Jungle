@@ -60,7 +60,7 @@ export class WalletService {
       const { data } = await axios.get(url);
       return data;
     } catch (err) {
-      throw new HttpException(`oneInchApi err : ${err}`, 500);
+      throw new HttpException(`oneInchApi err : ${methodName}, ${err}`, 500);
     }
   }
 
@@ -101,13 +101,16 @@ export class WalletService {
         quoteDto.estimatedGas = quoteAmount.estimatedGas;
       } else if (mode == 'fixed_to_amount') {
         quoteDto.fromAmount = (
-          quoteAmount.fromTokenAmount ** 2 /
-          quoteAmount.toTokenAmount
+          Number(quoteAmount.fromTokenAmount) ** 2 /
+          Number(quoteAmount.toTokenAmount)
         ).toString();
         quoteDto.toAmount = amount;
         quoteDto.estimatedGas = quoteAmount.estimatedGas;
       }
 
+      if (toTokenAddress == '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
+        quoteDto.fromAmount = (Number(quoteDto.fromAmount) * 1.03).toString();
+      }
       return quoteDto;
     } catch (error) {
       throw new HttpException(`quote err : ${error}`, 500);
