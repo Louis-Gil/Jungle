@@ -17,21 +17,10 @@ export class WalletService {
   }
 
   async postSwap(walletRequestDto: WalletRequestDto) {
-    const {
-      fromTokenAddress,
-      toTokenAddress,
-      walletAddress,
-      mode,
-      slippage,
-      private_key,
-    } = walletRequestDto;
+    const { fromTokenAddress, toTokenAddress, slippage, private_key } =
+      walletRequestDto;
 
     const result = [];
-    // const remain = await this.oneInchApi('/approve/allowance', {
-    //   tokenAddress: fromTokenAddress,
-    //   walletAddress,
-    // });
-
     const wallet = this.web3.eth.accounts.wallet.add(private_key);
     const { fromAmount, ...quoteDto } = await this.quote(walletRequestDto);
 
@@ -51,14 +40,13 @@ export class WalletService {
 
     response.tx.gas = 1000000;
     const transaction = await this.web3.eth.sendTransaction(response.tx);
+    result.push(transaction);
 
     if (transaction.status) {
       console.log('Transaction success');
     } else {
       console.log('Transaction failed');
     }
-
-    result.push(transaction);
     return result;
   }
 
@@ -82,13 +70,10 @@ export class WalletService {
         tokenAddress,
         amount,
       });
-      console.log(approve);
-
       approve.gas = 1000000;
       approve.from = wallet.address; //check
 
       const transaction = await this.web3.eth.sendTransaction(approve);
-      console.log(transaction);
       if (transaction.status) {
         console.log('approve success');
       } else {
@@ -101,8 +86,7 @@ export class WalletService {
   }
 
   async quote(WalletRequestDto: WalletRequestDto) {
-    const { fromTokenAddress, toTokenAddress, walletAddress, amount, mode } =
-      WalletRequestDto;
+    const { fromTokenAddress, toTokenAddress, amount, mode } = WalletRequestDto;
     const quoteDto = new QuoteDto();
     const quoteAmount = await this.oneInchApi('/quote', {
       fromTokenAddress,
@@ -121,11 +105,7 @@ export class WalletService {
           quoteAmount.toTokenAmount
         ).toString();
         quoteDto.toAmount = amount;
-        quoteDto.estimatedGas = Math.max(
-          240000,
-          (quoteAmount.estimatedGas * quoteAmount.fromTokenAmount) /
-            quoteAmount.toTokenAmount,
-        );
+        quoteDto.estimatedGas = quoteAmount.estimatedGas;
       }
 
       return quoteDto;
