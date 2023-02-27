@@ -12,9 +12,6 @@ export class WalletService {
   apiBaseUrl = 'https://api.1inch.io/v5.0/' + this.chainId;
 
   async getQuote(walletRequestDto: WalletRequestDto) {
-    const { fromTokenAddress, toTokenAddress, walletAddress, amount, mode } =
-      walletRequestDto;
-
     const quoteAmount: QuoteDto = await this.quote(walletRequestDto);
     return quoteAmount;
   }
@@ -24,20 +21,19 @@ export class WalletService {
       fromTokenAddress,
       toTokenAddress,
       walletAddress,
-      amount,
       mode,
       slippage,
       private_key,
     } = walletRequestDto;
 
     const result = [];
-    const remain = await this.oneInchApi('/approve/allowance', {
-      tokenAddress: fromTokenAddress,
-      walletAddress,
-    });
+    // const remain = await this.oneInchApi('/approve/allowance', {
+    //   tokenAddress: fromTokenAddress,
+    //   walletAddress,
+    // });
+
     const wallet = this.web3.eth.accounts.wallet.add(private_key);
-    const quote = await this.getQuote(walletRequestDto);
-    result.push(quote);
+    const { amount, estimatedGas } = await this.quote(walletRequestDto);
     console.log('after quote');
 
     if (fromTokenAddress != '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
@@ -64,7 +60,6 @@ export class WalletService {
       console.log('Transaction failed');
     }
 
-    result.push(quote);
     result.push(transaction);
     return result;
   }
@@ -111,25 +106,25 @@ export class WalletService {
     const { fromTokenAddress, toTokenAddress, walletAddress, amount, mode } =
       WalletRequestDto;
     const quoteDto = new QuoteDto();
+    const quoteAmount = await this.oneInchApi('/quote', {
+      fromTokenAddress,
+      toTokenAddress,
+      amount,
+    });
 
     if (mode == 'fixed_from_amount') {
-      const quoteAmount = await this.oneInchApi('/quote', {
-        fromTokenAddress,
-        toTokenAddress,
-        amount,
-      });
       quoteDto.amount = quoteAmount.toTokenAmount;
       quoteDto.estimatedGas = quoteAmount.estimatedGas;
     } else if (mode == 'fixed_to_amount') {
-      const quoteAmount = await this.oneInchApi('/quote', {
-        fromTokenAddress,
-        toTokenAddress,
-        amount,
-      });
       quoteDto.amount = (
-        quoteAmount.fromTokenAmount / quoteAmount.toTokenAmount
+        quoteAmount.fromTokenAmount ** 2 /
+        quoteAmount.toTokenAmount
       ).toString();
-      quoteDto.estimatedGas = quoteAmount.estimatedGas;
+      quoteDto.estimatedGas = Math.max(
+        240000,
+        (quoteAmount.estimatedGas * quoteAmount.fromTokenAmount) /
+          quoteAmount.toTokenAmount,
+      );
     }
 
     return quoteDto;
