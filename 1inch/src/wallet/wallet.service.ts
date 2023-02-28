@@ -71,7 +71,7 @@ export class WalletService {
         amount,
       });
       approve.gas = 1000000;
-      approve.from = wallet.address; //check
+      approve.from = wallet.address;
 
       const transaction = await this.web3.eth.sendTransaction(approve);
       if (transaction.status) {
