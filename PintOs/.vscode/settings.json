@@ -1,0 +1,27 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "thread.h": "c",
+        "inttypes.h": "c",
+        "intrinsic.h": "c",
+        "palloc.h": "c",
+        "interrupt.h": "c",
+        "synch.h": "c",
+        "string.h": "c",
+        "process.h": "c",
+        "directory.h": "c",
+        "gdt.h": "c",
+        "init.h": "c",
+        "flags.h": "c",
+        "vaddr.h": "c",
+        "*.inc": "c",
+        "main.h": "c",
+        "file.h": "c",
+        "filesys.h": "c",
+        "stdlib.h": "c",
+        "mmu.h": "c",
+        "stddef.h": "c",
+        "disk.h": "c",
+        "free-map.h": "c"
+    }
+}
