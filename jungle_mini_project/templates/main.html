@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .comment-box {
+            background-color: #d9d9d9;
+            width: 173px;
+            height: 56px;
+            border-radius: 30px;
+            padding: 10px
+        }
+
+        .wrapper {
+            margin: 0 auto;
+            width: 947px;
+            height: 700px;
+            /* overflow: auto; */
+        }
+
+        /* div {
+            padding: 10px;
+        } */
+
+        header {
+            background-color: #faefef;
+        }
+
+        main {
+            background-color: #FAEFEF;
+            display: flex;
+            justify-content: flex-start;
+            padding-bottom: 15px;
+        }
+
+        .map {
+            display: inline-block;
+            width: 719px;
+            height: 568px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .logo-jungle {
+            width: 130px;
+            background-color: white;
+            margin: 10px;
+            padding: 2px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        header {
+            display: flex;
+            height: 50px;
+            justify-content: space-between;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .welcome {
+            color: rgb(116, 112, 115);
+        }
+
+        inner {
+            color: violet;
+        }
+
+        .aside {
+            width: 218px;
+            height: 568px;
+            position: relative;
+            top: 10px;
+
+            display: inline-block;
+            background-color: white;
+        }
+
+        .comment-input-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            width: 188px;
+            height: 128px;
+            margin: 10px;
+            background-color: #f5f0f0;
+            border-radius: 15px;
+        }
+
+        .comment-input-box input {
+            width: 150px;
+            height: 60px;
+            /* padding: auto; */
+            margin: auto;
+            background-color: white;
+            border: none;
+        }
+
+        .comment-input-box button {
+            float: right;
+            margin: auto;
+            margin-left: 10px;
+            padding: 8px;
+            background-color: #006EF9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #comments_table {
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 350px;
+        }
+
+        .input_box_line {
+            display: inline-flex;
+
+        }
+
+        .pin {
+            position: absolute;
+            z-index: 2;
+            visibility: hidden;
+        }
+
+        .pin1 {
+            top: 275px;
+            left: 365px;
+        }
+
+        .pin2 {
+            top: 95px;
+            left: 275px;
+        }
+
+        .pin3 {
+            top: 60px;
+            left: 380px;
+        }
+
+        .pin4 {
+            top: 64px;
+            left: 504px;
+        }
+
+        .people {
+            position: absolute;
+            top: 100px;
+            left: 200px;
+            z-index: 1;
+            visibility: hidden;
+        }
+
+        .people-row {
+            padding: 0px;
+        }
+
+        .map-img {
+            position: relative;
+            padding: 10px;
+        }
+
+        .stores {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            text-align: center;
+            font-size: 18px;
+            margin: auto;
+            top: 450px;
+            left: 10px;
+            z-index: 1;
+        }
+
+        .stores div div {
+            text-align: center;
+            padding: auto;
+        }
+
+        .stores-list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 128px;
+            height: 45px;
+            margin: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .stores-gogo {
+            background-color: #ebbde1;
+        }
+
+        .stores-daiso {
+            background-color: #F58FA8;
+        }
+
+        .stores-oliveyoung {
+            background-color: #74Ebb2;
+        }
+
+        .stores-dunkin {
+            background-color: #b1acec;
+        }
+
+        ul.li {
+            padding-inline-start: 5px;
+        }
+
+        .comment-box {
+            word-break: break-all;
+        }
+
+        input:focus {
+            outline: white;
+        }
+
+        .aside h2 {
+            margin-left: 10px;
+        }
+
+        .comment-box p {
+            margin: 0;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.1.js"
+        integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"
+        integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        function logout() {
+
+            window.location = "/api/logout"
+        }
+        store = "고고짬뽕"
+        RemainTime = 300;
+
+        $(document).ready(function init() {
+            tid = setInterval('msg_time()', 1000);
+            load_text(store)
+        });
+
+        function select_text(store) {
+            $('#comments_table').empty()
+            $('#store_T').text(`${store}`)
+            load_text(store)
+            initComments()
+        }
+
+        function load_text(store) {
+            $.ajax({
+                type: "POST",
+                url: "/api/load",
+                data: { "store_give": store },
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        comments = response['comments']
+                        for (let i = 0; i < comments.length; i++) {
+                            num = comments[i]['num']
+                            comment = comments[i]['comment']
+                            import_text(store, num, comment)
+                        }
+                    } else {
+                        alert('불러오기에 실패했습니다.')
+                    }
+                }
+            })
+        }
+
+        function import_text(store, num, comment) {
+            $("#store_T").text(store);
+            let temp_html = `
+            <ul class="li">
+                        <div class="unknown-name">익명${num}</div>
+                        <div class="comment-box">
+                            <p>${comment}</p>
+                        </div>
+                    </ul>
+            `;
+            $("#comments_table").append(temp_html)
+        }
+
+        function msg_time() {
+            $('#login_time').text(RemainTime);
+            RemainTime = RemainTime - 1
+            if (RemainTime < 1) {
+                clearInterval(tid)
+                window.location.replace('/')
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <header>
+            <div class="logo-jungle">
+                <img src="static\logo1.png" alt="" onclick="logout()">
+            </div>
+            <div class="welcome">
+                <p>
+                    <inner>정글5기 a반 환영합니다</inner>로그인 남은시간 <span id="login_time"></span>초
+                </p>
+            </div>
+        </header>
+        <main>
+            <div class="map">
+                <div class="pin1 pin">
+                    <img src="static/pin.png" alt="" width="30px" height="40px">
+                </div>
+                <div class="pin2 pin">
+                    <img src="static/pin.png" alt="" width="30px" height="40px">
+                </div>
+                <div class="pin3 pin">
+                    <img src="static/pin.png" alt="" width="30px" height="40x">
+                </div>
+                <div class="pin4 pin">
+                    <img src="static/pin.png" alt="" width="30px" height="40px">
+                </div>
+
+                <div class="people">
+                    <div class="people-row11 people-row">
+                        <img src="static/people-bg.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row10 people-row">
+                        <img src="static/people-bg.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row9 people-row">
+                        <img src="static/people-bk.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row8 people-row">
+                        <img src="static/people-bk.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row7 people-row">
+                        <img src="static/people-bg.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row6 people-row">
+                        <img src="static/people-bg.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row5 people-row">
+                        <img src="static/people-bg.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row4 people-row">
+                        <img src="static/people-bg.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row3 people-row">
+                        <img src="static/people-bg.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row2 people-row">
+                        <img src="static/people-bg.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-sy.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                    <div class="people-row1 people-row">
+                        <img src="static/people-jw.png" class="bg1 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg2 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg3 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg4 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg5 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg6 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-jw.png" class="bg7 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg8 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bg.png" class="bg9 smilepeople" alt="" width="30px" height="30px">
+                        <img src="static/people-bk.png" class="bg10 smilepeople" alt="" width="30px" height="30px">
+                    </div>
+                </div>
+
+                <div class="stores">
+                    <div class="stores-gogo stores-list " id="route_gogo"
+                        onclick="showRoute(route_gogo);select_text('고고짬뽕')">
+                        고고짬뽕
+                    </div>
+                    <div class="stores-daiso stores-list " id="route_daiso"
+                        onclick="showRoute(route_daiso);select_text('다이소')">
+                        다이소
+                    </div>
+                    <div class=" stores-oliveyoung stores-list " id="route_oliveyoung"
+                        onclick="showRoute(route_oliveyoung);select_text('올리브영')">
+                        <div>올리브영</div>
+                    </div>
+                    <div class=" stores-dunkin stores-list " id="route_dunkin"
+                        onclick="showRoute(route_dunkin);select_text('던킨')">
+                        <div>던킨</div>
+                    </div>
+
+                </div>
+
+                <img src=" static\map2.png" class="map-img">
+            </div>
+
+            <div id="rightside" class="aside">
+                <div>
+                    <h2 id="store_T">고고짬뽕</h2>
+                </div>
+                <div id="comments_table">
+
+                </div>
+
+                <div class="comment-input-box">
+                    <input id="input_box" onkeyup="enterkey()" type="text">
+                    <div class="input_box_line">
+                        <button onclick="initComments()" class="table_button"> 초기화 </button>
+                        <button onclick="submitComments()" class="table_button"> 저장 </button>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+    <!-- <img src="static\pin.png" alt="" width="50px" height="50px" id="pin"> -->
+    </main>
+    </div>
+</body>
+
+<script>
+    "use strict";
+
+    $(document).ready(() => {
+        $('input').focus();
+    });
+
+    let route_dunkin = [[1, 1], [1, 2], [1, 3], [1, 4], [2, 4], [3, 4], [4, 4], [4, 5], [4, 6], [4, 7], [4, 8], [4, 9], [4, 10], [5, 10], [6, 10], [7, 10], [8, 10], [9, 10], [10, 10], [11, 10]]
+    let route_daiso = [[1, 1], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [7, 2], [8, 2], [9, 2], [10, 2], [10, 3]]
+    let route_oliveyoung = [[1, 1], [1, 2], [1, 3], [1, 4], [2, 4], [3, 4], [4, 4], [4, 5], [4, 6], [4, 7], [5, 7], [6, 7], [7, 7], [8, 7], [9, 7], [10, 7], [11, 7], [11, 6]]
+    let route_gogo = [[1, 1], [1, 2], [1, 3], [1, 4], [2, 4], [3, 4], [4, 4], [4, 5], [4, 6], [4, 7], [5, 7], [4, 7]]
+
+    showRoute(route_dunkin, true)
+
+
+    function showRoute(route_store, init = false) {
+
+        if (init == false) {
+            for (let i = 1; i < 12; i++) {
+                for (let j = 1; j < 11; j++) {
+                    $(`.people-row${i} .bg${j}`).css('visibility', 'hidden');
+                }
+            }
+        }
+
+        let bumgyus = route_store;
+        let delay = 0;
+
+        for (let i = 0; i < bumgyus.length; i++) {
+            //time interval set
+            delay += 25;
+            var animationID = setTimeout(async () => {
+                let x = bumgyus[i][0];
+                let y = bumgyus[i][1];
+                $(`.people-row${x} .bg${y}`).css('visibility', 'visible');
+            }, delay);
+        }
+
+        // show PIN
+        if (route_store == route_gogo) {
+            $('.pin1').css('visibility', 'visible');
+            $('.pin2').css('visibility', 'hidden');
+            $('.pin3').css('visibility', 'hidden');
+            $('.pin4').css('visibility', 'hidden');
+        }
+        else if (route_store == route_daiso) {
+            $('.pin1').css('visibility', 'hidden');
+            $('.pin2').css('visibility', 'visible');
+            $('.pin3').css('visibility', 'hidden');
+            $('.pin4').css('visibility', 'hidden');
+
+        } else if (route_store == route_oliveyoung) {
+            $('.pin1').css('visibility', 'hidden');
+            $('.pin2').css('visibility', 'hidden');
+            $('.pin3').css('visibility', 'visible');
+            $('.pin4').css('visibility', 'hidden');
+
+        } else if (route_store == route_dunkin) {
+            $('.pin1').css('visibility', 'hidden');
+            $('.pin2').css('visibility', 'hidden');
+            $('.pin3').css('visibility', 'hidden');
+            $('.pin4').css('visibility', 'visible');
+        }
+    }
+
+
+    function initComments() {
+        let input_box = document.getElementById('input_box');
+        input_box.value = null;
+    }
+
+    function submitComments() {
+        let comment = $('input').val()
+        let store_R = $('#store_T').text()
+        if (comment == "") {
+            alert('내용을 입력해 주세요!');
+            return
+        }
+        $.ajax({
+            type: "POST",
+            url: "/api/comments",
+            data: { comment_give: comment, store_name: store_R },
+            success: function (response) {
+                if (response['result'] == 'success') {
+                    alert('댓글작성 완료!!');
+                    select_text(store_R)
+                }
+            }
+        })
+    }
+
+    function enterkey() {
+        if (window.event.keyCode == 13) {
+            submitComments();
+        }
+    }
+</script>
+
+</html>
