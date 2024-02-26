@@ -254,5 +254,49 @@ def solution_dijkstra_5(rectangle, characterX, characterY, itemX, itemY):
 
     return dijkstra(characterX*2, characterY*2, itemX*2, itemY*2, field)
 
-print(solution_bfs_5([[1,1,7,4],[3,2,5,5],[4,3,6,9],[2,6,8,8]],1,3,7,8)) # 17
-print(solution_dijkstra_5([[1,1,7,4],[3,2,5,5],[4,3,6,9],[2,6,8,8]],1,3,7,8)) # 17
+# print(solution_bfs_5([[1,1,7,4],[3,2,5,5],[4,3,6,9],[2,6,8,8]],1,3,7,8)) # 17
+# print(solution_dijkstra_5([[1,1,7,4],[3,2,5,5],[4,3,6,9],[2,6,8,8]],1,3,7,8)) # 17
+
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/43164
+# not recommended
+def solution_bfs_6(tickets):
+    def bfs(tickets, queue):
+        while queue:
+            current, route, visited = queue.popleft()
+            if all(visited):
+                return route
+
+            for i, (src, dest) in enumerate(tickets):
+                if not visited[i] and src == current:
+                    new_visited = visited[:]
+                    new_visited[i] = True
+                    queue.append((dest, route + [dest], new_visited))
+
+
+    tickets.sort()
+    queue = deque([("ICN", ["ICN"], [False] * len(tickets))])
+    return bfs(tickets, queue)
+
+def solution_dfs_6(tickets):
+    def dfs(tickets, visited, route, start, count):
+        route.append(start)
+        if count == len(tickets):
+            return route
+
+        for i in range(len(tickets)):
+            if not visited[i] and tickets[i][0] == start:
+                visited[i] = True
+                result = dfs(tickets, visited, route, tickets[i][1], count + 1)
+                if result:
+                    return result
+                visited[i] = False
+        route.pop()
+
+    tickets.sort()
+    visited = [False] * len(tickets)
+    route = []
+    return dfs(tickets, visited, route, "ICN", 0)
+
+print(solution_bfs_6([["ICN", "JFK"], ["HND", "IAD"], ["JFK", "HND"]])) # ["ICN", "JFK", "HND", "IAD"]
+print(solution_dfs_6([["ICN", "JFK"], ["HND", "IAD"], ["JFK", "HND"]])) # ["ICN", "JFK", "HND", "IAD"]
