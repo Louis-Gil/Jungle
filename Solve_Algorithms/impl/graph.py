@@ -1,4 +1,5 @@
 from collections import deque
+import heapq
 
 # https://school.programmers.co.kr/learn/courses/30/lessons/43165
 def solution_bfs_1(numbers, target):
@@ -174,3 +175,84 @@ def solution_dfs_4(begin, target, words):
 
 # print(solution_bfs_4("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"])) # 4
 # print(solution_dfs_4("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"])) # 4
+
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/87694
+def solution_bfs_5(rectangle, characterX, characterY, itemX, itemY):
+    def bfs(start_x, start_y, target_x, target_y, field, visited):
+        q = deque()
+        q.append([start_x, start_y])
+        visited[start_x][start_y] = 1
+
+        dx = [-1, 1, 0, 0]
+        dy = [0, 0, -1, 1]
+
+        while q:
+            x, y = q.popleft()
+            if x == target_x and y == target_y:
+                return (visited[x][y] - 1) // 2 
+            
+            for k in range(4):
+                nx, ny = x + dx[k], y + dy[k]
+                if field[nx][ny] == 1 and visited[nx][ny] == 0:
+                    q.append([nx, ny])
+                    visited[nx][ny] = visited[x][y] + 1
+
+    field = [[-1] * 102 for _ in range(102)]
+    visited = [[0] * 102 for _ in range(102)]
+    
+    # 직사각형 그리기
+    for x1, y1, x2, y2 in rectangle:
+        x1, y1, x2, y2 = x1*2, y1*2, x2*2, y2*2
+        for i in range(x1, x2+1):
+            for j in range(y1, y2+1):
+                if x1 < i < x2 and y1 < j < y2:
+                    field[i][j] = 0
+                elif field[i][j] != 0:
+                    field[i][j] = 1
+
+    return bfs(characterX*2, characterY*2, itemX*2, itemY*2, field, visited)
+
+def solution_dijkstra_5(rectangle, characterX, characterY, itemX, itemY):
+    def dijkstra(start_x, start_y, target_x, target_y, field):
+        q = []
+        heapq.heappush(q, (0, start_x, start_y))
+        distances = [[float('inf')] * 102 for _ in range(102)]
+        distances[start_x][start_y] = 0
+
+        dx = [-1, 1, 0, 0]
+        dy = [0, 0, -1, 1]
+
+        while q:
+            dist, x, y = heapq.heappop(q)
+            if x == target_x and y == target_y:
+                return dist // 2
+
+            for k in range(4):
+                nx, ny = x + dx[k], y + dy[k]
+                if 0 <= nx < 102 and 0 <= ny < 102 and field[nx][ny] == 1:
+                    cost = dist + 1
+                    if cost < distances[nx][ny]:
+                        distances[nx][ny] = cost
+                        heapq.heappush(q, (cost, nx, ny))
+
+    field = [[0] * 102 for _ in range(102)]
+    
+    # 직사각형 그리기 및 경계 설정
+    for x1, y1, x2, y2 in rectangle:
+        x1, y1, x2, y2 = x1*2, y1*2, x2*2, y2*2
+        for i in range(x1, x2+1):
+            for j in range(y1, y2+1):
+                field[i][j] = 1
+    
+    # 경계 내부를 0으로 설정하여, 벽을 넘지 않도록 함
+    for x1, y1, x2, y2 in rectangle:
+        x1, y1, x2, y2 = x1*2, y1*2, x2*2, y2*2
+        for i in range(x1+1, x2):
+            for j in range(y1+1, y2):
+                field[i][j] = 0
+
+    return dijkstra(characterX*2, characterY*2, itemX*2, itemY*2, field)
+
+print(solution_bfs_5([[1,1,7,4],[3,2,5,5],[4,3,6,9],[2,6,8,8]],1,3,7,8)) # 17
+print(solution_dijkstra_5([[1,1,7,4],[3,2,5,5],[4,3,6,9],[2,6,8,8]],1,3,7,8)) # 17
