@@ -1,4 +1,5 @@
 from collections import deque
+from collections import defaultdict
 import heapq
 
 # https://school.programmers.co.kr/learn/courses/30/lessons/43165
@@ -298,5 +299,68 @@ def solution_dfs_6(tickets):
     route = []
     return dfs(tickets, visited, route, "ICN", 0)
 
-print(solution_bfs_6([["ICN", "JFK"], ["HND", "IAD"], ["JFK", "HND"]])) # ["ICN", "JFK", "HND", "IAD"]
-print(solution_dfs_6([["ICN", "JFK"], ["HND", "IAD"], ["JFK", "HND"]])) # ["ICN", "JFK", "HND", "IAD"]
+# print(solution_bfs_6([["ICN", "JFK"], ["HND", "IAD"], ["JFK", "HND"]])) # ["ICN", "JFK", "HND", "IAD"]
+# print(solution_dfs_6([["ICN", "JFK"], ["HND", "IAD"], ["JFK", "HND"]])) # ["ICN", "JFK", "HND", "IAD"]
+
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/86971
+def solution_bfs_7(n, wires):
+    def bfs(v, graph, visited):
+        queue = deque([v])
+        visited[v] = True
+        count = 0
+
+        while queue:
+            v = queue.popleft()
+            count += 1
+            for u in graph[v]:
+                if not visited[u]:
+                    queue.append(u)
+                    visited[u] = True
+        return count
+
+    graph = [[] for _ in range(n+1)]
+    for v, u in wires:
+        graph[v].append(u)
+        graph[u].append(v)
+
+    answer = 100
+    for i in range(n-1):
+        visited = [False for _ in range(n+1)]
+        v1, v2 = wires[i]
+        graph[v1].remove(v2)
+        graph[v2].remove(v1)
+
+        visited[v1] = True
+        count1 = bfs(v1, graph, visited)
+        count2 = n - count1
+        answer = min(answer, abs(count1 - count2))
+
+        graph[v1].append(v2)
+        graph[v2].append(v1)
+
+    return answer
+
+
+def solution_dfs_7(n, wires):
+    def dfs(v, graph, visited):
+        visited[v] = True
+        return sum([1] + [dfs(u, graph, visited) for u in graph[v] if not visited[u]])
+
+    graph = [[] for _ in range(n+1)]
+    for v, u in wires:
+        graph[v].append(u)
+        graph[u].append(v)
+    
+    answer = 100
+    for i in range(n-1):
+        visited = [False for _ in range(n+1)]
+        v1, v2 = wires[i]
+        visited[v2] = True
+        tmp = abs(dfs(v1, graph, visited) - dfs(v2, graph, visited))
+        answer = min(tmp, answer)
+
+    return answer
+
+# print(solution_bfs_7(9, [[1,3],[2,3],[3,4],[4,5],[4,6],[4,7],[7,8],[7,9]])) # 3
+# print(solution_dfs_7(9, [[1,3],[2,3],[3,4],[4,5],[4,6],[4,7],[7,8],[7,9]])) # 3
