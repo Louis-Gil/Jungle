@@ -11,6 +11,16 @@ right = stack.pop()
 print(right)
 print(stack)
 
+## from collections import defaultdict
+
+graph = defaultdict(list)
+def add_edge(graph, u, v):
+  graph[u].append(v)
+
+add_edge(graph, 'A', 'B')
+
+for vertex, edges in graph.items():
+  print(f"{vertex}: {edges}")
 
 ## import heapq
 

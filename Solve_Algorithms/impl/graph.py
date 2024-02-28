@@ -364,3 +364,65 @@ def solution_dfs_7(n, wires):
 
 # print(solution_bfs_7(9, [[1,3],[2,3],[3,4],[4,5],[4,6],[4,7],[7,8],[7,9]])) # 3
 # print(solution_dfs_7(9, [[1,3],[2,3],[3,4],[4,5],[4,6],[4,7],[7,8],[7,9]])) # 3
+
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/49189
+def solution_bfs_8(n, edge):
+    def bfs(graph, start, distances):
+        queue = deque([start])
+        visited = [False] * (n+1)
+        visited[start] = True
+
+        while queue:
+            v = queue.popleft()
+            for u in graph[v]:
+                if not visited[u]:
+                    queue.append(u)
+                    distances[u] = distances[v] + 1
+                    visited[u] = True
+
+
+    graph = defaultdict(list)
+
+    for e, v in edge:
+        graph[e].append(v)
+        graph[v].append(e)
+
+    distances = [0] * (n+1)
+    bfs(graph, 1, distances)
+
+    max_distance = max(distances)
+    return distances.count(max_distance)
+
+def solution_dijkstra_8(n, edge):
+    def dijkstra(graph, start):
+        distances = {vertex: float('inf') for vertex in range(1, len(graph) + 1)}
+        distances[start] = 0
+        queue = []
+        heapq.heappush(queue, [distances[start], start]) # [distance, vertex]
+
+        while queue:
+            current_distance, current_vertex = heapq.heappop(queue)
+            if distances[current_vertex] < current_distance:
+                continue
+            
+            for adjacent, weight in graph[current_vertex]:
+                distance = current_distance + weight
+                if distance < distances[adjacent]:
+                    distances[adjacent] = distance
+                    heapq.heappush(queue, [distance, adjacent])
+
+        return distances
+
+    graph = {i: [] for i in range(1, n+1)}
+    for e, v in edge:
+        graph[e].append((v, 1))
+        graph[v].append((e, 1))
+    
+    distances = dijkstra(graph, 1)
+    max_distance = max(distances.values())
+    return list(distances.values()).count(max_distance)
+
+
+# print(solution_bfs_8(6, [[3, 6], [4, 3], [3, 2], [1, 3], [1, 2], [2, 4], [5, 2]])) # 3
+# print(solution_dijkstra_8(6, [[3, 6], [4, 3], [3, 2], [1, 3], [1, 2], [2, 4], [5, 2]])) # 3
