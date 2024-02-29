@@ -426,3 +426,78 @@ def solution_dijkstra_8(n, edge):
 
 # print(solution_bfs_8(6, [[3, 6], [4, 3], [3, 2], [1, 3], [1, 2], [2, 4], [5, 2]])) # 3
 # print(solution_dijkstra_8(6, [[3, 6], [4, 3], [3, 2], [1, 3], [1, 2], [2, 4], [5, 2]])) # 3
+
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/81302
+def solution_bfs_9(places):
+    directions = [(-1, 0), (0, -1), (0, 1), (1, 0)]
+
+    def bfs(place, start):
+        visited = [[False] * 5 for _ in range(5)]
+        queue = deque([(*start, 0)])
+
+        while queue:
+            y, x, dist = queue.popleft()
+            visited[y][x] = True
+            if 0 < dist <= 2 and place[y][x] == 'P':
+                return True
+            if dist > 2:
+                break
+
+            for i in range(4):
+                ny, nx = y + directions[i][0], x + directions[i][1]
+                if 0 <= ny < 5 and 0 <= nx < 5 and place[ny][nx] != 'X' and not visited[ny][nx]:
+                    queue.append((ny, nx, dist+1))
+
+        return False
+
+    answer = []
+    for place in places:
+        found = False
+        for i in range(5):
+            for j in range(5):
+                if place[i][j] == 'P':
+                    if bfs(place, (i, j)):
+                        found = True
+                        break
+            if found:
+                break
+        answer.append(0 if found else 1)
+    return answer
+
+def solution_dfs_9(places):
+    directions = [(-1, 0), (0, -1), (0, 1), (1, 0)]
+
+    def is_safe(x, y, place):
+        return 0 <= x < 5 and 0 <= y < 5 and place[x][y] != 'X'
+
+    def dfs(x, y, place, visited, step):
+        if step == 2:
+            return True
+        
+        visited[x][y] = True
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+
+            if is_safe(nx, ny, place) and not visited[nx][ny]:
+                if place[nx][ny] == 'P' or dfs(nx, ny, place, visited, step + 1) == False:
+                    return False
+        return True
+
+    def search(place):
+        visited = [[False] * 5 for _ in range(5)]
+
+        for i in range(5):
+            for j in range(5):
+                if place[i][j] == 'P' and not visited[i][j]:
+                    if not dfs(i, j, place, visited, 0):
+                        return False
+        return True
+
+    answer = [1 if search(place) else 0 for place in places]
+    return answer
+
+
+# print(solution_bfs_9([["POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"], ["POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"], ["PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"], ["OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"], ["PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"]])) # [1, 0, 1, 1, 1]
+# print(solution_dfs_9([["POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"], ["POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"], ["PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"], ["OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"], ["PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"]])) # [1, 0, 1, 1, 1]
