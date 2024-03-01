@@ -501,3 +501,27 @@ def solution_dfs_9(places):
 
 # print(solution_bfs_9([["POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"], ["POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"], ["PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"], ["OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"], ["PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"]])) # [1, 0, 1, 1, 1]
 # print(solution_dfs_9([["POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"], ["POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"], ["PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"], ["OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"], ["PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"]])) # [1, 0, 1, 1, 1]
+
+def solution_backtrack_10(picks, minerals):
+    fatigue_factors = [{"diamond": 1, "iron": 1, "stone": 1},
+                    {"diamond": 5, "iron": 1, "stone": 1},
+                    {"diamond": 25, "iron": 5, "stone": 1}]
+
+    def backtrack(picks, minerals, fatigue, min_fatigue):
+        if sum(picks) == 0 or len(minerals) == 0:
+            return min(fatigue, min_fatigue)
+        if fatigue >= min_fatigue:
+            return float('inf')
+        
+        for idx, fatigues in enumerate(fatigue_factors):
+            if picks[idx] > 0:
+                temp_picks = picks.copy()
+                temp_picks[idx] -= 1
+                new_fatigue = fatigue + sum(fatigues[mineral] for mineral in minerals[:5])
+                min_fatigue = min(min_fatigue, backtrack(temp_picks, minerals[5:], new_fatigue, min_fatigue))
+        return min_fatigue
+        
+
+    return backtrack(picks, minerals, 0, float('inf'))
+
+# print(solution_backtrack_10([1, 3, 2], ["diamond", "diamond", "diamond", "iron", "iron", "diamond", "iron", "stone"])) # 12
