@@ -27,3 +27,24 @@ def solution_dp_1(N, number):
 	return answer
 
 # print(solution_dp_1(5, 12)) # 4
+
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/43105
+def solution_dp_2(triangle):
+	def dp(max_high, next_list):
+		next_high = []
+		for i in range(len(next_list)):
+			if i == 0:
+				next_high.append(max_high[0] + next_list[i])
+			elif i == len(next_list) - 1:
+				next_high.append(max_high[i-1] + next_list[i])
+			else:
+				next_high.append(max(max_high[i-1], max_high[i]) + next_list[i])
+		return next_high
+
+	max_high = triangle[0]
+	for i in range(len(triangle) - 1):
+		max_high = dp(max_high, triangle[i+1])
+	return max(max_high)
+
+# print(solution_dp_2([[7], [3, 8], [8, 1, 0], [2, 7, 4, 4], [4, 5, 2, 6, 5]])) # 30
