@@ -80,3 +80,29 @@ def solution_dp_3(m, n, puddles):
     return ways[-1][-1]%1000000007
 	
 # print(solution_dp_3(4, 3, [[2, 2]])) # 4
+
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/1843
+def solution_dp_4(arr):
+    M = [0, 0, 0]
+    m = [0, 0, 0]
+    for i in range(len(arr) - 1, -1, -1):
+        if arr[i] == '-':
+            M = [i - temp for i in M]
+            m = [i - temp for i in m]
+            if i != 1:
+                M = [-max(M + m), max(M + m), max(M + m)]
+                m = [-min(M + m), min(M + m), min(M + m)]
+            else:
+                result = max(M + m)
+        elif arr[i] == '+':
+            M = [M[0] - temp, M[1] - temp, M[2] + temp]
+            m = [m[0] - temp, m[1] - temp, m[2] + temp]
+            if i == 1:
+                result = M[2]
+        else:
+            temp = int(arr[i])
+    result += temp
+    return result
+
+# print(solution_dp_4(["5", "-", "3", "+", "1", "+", "2", "-", "4"])) # 3
