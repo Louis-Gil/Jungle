@@ -42,3 +42,17 @@ def solution_greedy_2(name):
 
 
 # print(solution_greedy_2("JEROEN")) # 56
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/42883
+def solution_greedy_3(number, k):
+    stack = [number[0]]
+    for num in number[1:]:
+        while len(stack) > 0 and stack[-1] < num and k > 0:
+            k -= 1
+            stack.pop()
+        stack.append(num)
+    if k != 0:
+        stack = stack[:-k]
+    return ''.join(stack)
+
+# print(solution_greedy_3("1924", 2)) # "94"
