@@ -1,3 +1,5 @@
+from collections import deque
+
 # https://school.programmers.co.kr/learn/courses/30/lessons/42862
 def solution_greedy_1(n, lost, reserve):
     lost, reserve = list(set(lost) - set(reserve)), list(set(reserve) - set(lost))
@@ -43,6 +45,7 @@ def solution_greedy_2(name):
 
 # print(solution_greedy_2("JEROEN")) # 56
 
+
 # https://school.programmers.co.kr/learn/courses/30/lessons/42883
 def solution_greedy_3(number, k):
     stack = [number[0]]
@@ -56,3 +59,19 @@ def solution_greedy_3(number, k):
     return ''.join(stack)
 
 # print(solution_greedy_3("1924", 2)) # "94"
+
+
+# https://school.programmers.co.kr/learn/courses/30/lessons/42885
+def solution_greedy_4(people, limit):
+    answer = 0
+    people.sort(reverse=True)
+    que = deque(people)
+
+    while que:
+        target = que.popleft()
+        answer += 1
+        if que and target + que[-1] <= limit:
+            que.pop()
+    return answer
+
+# print(solution_greedy_4([70, 50, 80, 50], 100)) # 3
